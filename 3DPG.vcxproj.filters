@@ -1,0 +1,730 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>15acf0c0-7fc5-4ec8-95da-e33287853a97</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>c6e2b8fe-40e9-411f-9e1b-f137e593d5d7</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dds;dlg;fbx;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{ed2a8cb0-fe82-4bac-9e7c-e1f5a502602a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Props">
+      <UniqueIdentifier>{869dcdbc-b067-41b4-b690-461b9197bb54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Textures">
+      <UniqueIdentifier>{20a8e581-4a2c-49a1-bf58-3fe3f21e8a69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Fonts">
+      <UniqueIdentifier>{c8094758-b03c-4b63-af56-c937e25b426d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{4dc47422-9d41-4ed8-a340-c0ec9c52fb2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\TitleScene">
+      <UniqueIdentifier>{24d9e80b-bd52-4450-ae58-23535841a683}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene">
+      <UniqueIdentifier>{d39571ab-a056-4520-8b8d-72bf07d1471a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CameraParam">
+      <UniqueIdentifier>{977b1754-6e5e-4e15-af33-e05f8641da2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\DrawObject">
+      <UniqueIdentifier>{a8c030a2-af0c-49c8-aafb-9f98bf8ef89f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\GetInstance">
+      <UniqueIdentifier>{aad52dd0-4fa3-4fc8-b886-179d6e9a2a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\InputManager">
+      <UniqueIdentifier>{a4443ab6-e215-4b74-b707-03097023657e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\SoundManager">
+      <UniqueIdentifier>{2cf68f4f-572d-418b-a829-8699d98145e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\DrawObject\DrawGeometry">
+      <UniqueIdentifier>{8f815685-eab0-41b9-9d6a-1e11f0d81c96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\DrawObject\DrawModel">
+      <UniqueIdentifier>{7084a331-a119-4a5b-a1a8-1240738062f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\DrawObject\DrawText">
+      <UniqueIdentifier>{11f6736a-49ed-48da-a10c-0b29a006505d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\DrawObject\DrawTexture2D">
+      <UniqueIdentifier>{864681ea-a534-48d5-b383-7bf6d5ee73bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\DrawObject\DrawTexture3D">
+      <UniqueIdentifier>{5e5f41ab-6c82-41e4-a1b5-42b757aaadd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\Stage">
+      <UniqueIdentifier>{3654182e-3e8d-4c4b-871b-a4751f0c0054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\Collision">
+      <UniqueIdentifier>{fb82c1a5-59f0-471e-8122-4062e7ad4d96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\EnemyManager">
+      <UniqueIdentifier>{b4b85f21-a04d-4331-8f17-a4c78d2d650f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\EnemyManager\Enemy">
+      <UniqueIdentifier>{0cf2d0ee-6a10-4935-9928-50eecb3df30c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\Player">
+      <UniqueIdentifier>{06e12d81-d4dc-4dd1-8b35-21764e88be5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\UnitManager">
+      <UniqueIdentifier>{84019783-e39a-4e89-8f7e-f06224647eb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\UnitManager\Unit">
+      <UniqueIdentifier>{6ce5c177-0d51-4114-8f98-96acbbc0f938}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\BulletManager">
+      <UniqueIdentifier>{d2bc1a50-7e20-4430-b23c-e856de49ea7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\BulletManager\Bullet">
+      <UniqueIdentifier>{34ac7668-509f-49ba-8774-fc17afac6c2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\EffectManager">
+      <UniqueIdentifier>{b2eced18-0204-43b7-bc13-12f34b7fd0b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\EffectManager\Effect">
+      <UniqueIdentifier>{6ff415fb-b439-4a72-b5f5-50246fbd6467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\SelectScene">
+      <UniqueIdentifier>{b5eaa3d6-773a-4238-95bd-d9ea0e4f1e78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\ResultScene">
+      <UniqueIdentifier>{1ddc7a8c-4398-433a-b12f-95d56c50d3db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\GameUI">
+      <UniqueIdentifier>{3b27246f-ea30-4855-9752-eff938ec4e55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\ResourceManager">
+      <UniqueIdentifier>{05591644-52de-4249-a1a4-ace2ea821148}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\ResourceManager\Resource_2D_Texture">
+      <UniqueIdentifier>{501b3f03-7f68-4cf1-9ca8-ef13e8194528}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\ResourceManager\Resource_3D_Texture">
+      <UniqueIdentifier>{d0ddc6c6-7e7b-4a01-936f-a60ca9457c8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\ResourceManager\ResourceGeometry">
+      <UniqueIdentifier>{b1d13349-9f0c-48ae-9c5e-32c6c2409b64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\ResourceManager\ResourceModel">
+      <UniqueIdentifier>{fcfb9499-46ce-400f-9956-9f6795cbbecb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\ResourceManager\ResourceSound">
+      <UniqueIdentifier>{6b11b253-5a6f-4a2f-9e05-a6ebd688fbae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\Stage\Object">
+      <UniqueIdentifier>{32eb9622-a58d-4119-814d-95a2008c36ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\UnitManager\Unit\Swordfighter">
+      <UniqueIdentifier>{91c8d044-dd76-45c3-aeed-3840a3797965}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\UnitManager\Unit\Archer">
+      <UniqueIdentifier>{380cd000-0e91-4a8a-832c-056b0cf4cbf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\UnitManager\Unit\Gunner">
+      <UniqueIdentifier>{14d8ec58-1c9d-44a1-bb47-024b4fa3622a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\UnitManager\Unit\Cannon">
+      <UniqueIdentifier>{b25fb3d9-53d1-499f-8329-081d4e03a9e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\UnitManager\Unit\Wizard">
+      <UniqueIdentifier>{be7f24b1-5582-413b-9852-10166ac88d87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\AStar">
+      <UniqueIdentifier>{b2b6ae52-8640-48e0-be9c-506b84f64f39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\DoubleSpeed">
+      <UniqueIdentifier>{56ddbe83-07ea-4ce8-b341-9ab1bcb34207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\TitleScene\TitleUI">
+      <UniqueIdentifier>{f1dbf00a-dcde-4eff-a77d-19f3f38fc715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\SelectScene\SelectUI">
+      <UniqueIdentifier>{f6a4c9b9-19c0-4d4f-bea6-5390b618dc60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\UnitManager\Unit\Shogun">
+      <UniqueIdentifier>{99ab2c14-7598-4b12-8f31-46ec2104b94a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\ItemManager">
+      <UniqueIdentifier>{bf454462-1934-4686-b709-96451bbce662}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\ItemManager\Item">
+      <UniqueIdentifier>{4a8b8865-73d8-44da-845e-94b6776f8845}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\ItemManager\Item\Pit">
+      <UniqueIdentifier>{53483caf-9935-4f2c-b6a2-efde97280641}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\ItemManager\Item\Mallet">
+      <UniqueIdentifier>{7ef7984b-5da0-4fbc-96f8-f7d2847095e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\ItemManager\Item\Money">
+      <UniqueIdentifier>{98fa1f8b-d980-4ed7-aabb-69bd20a2d7df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\Volume">
+      <UniqueIdentifier>{18642e00-71f4-43a9-9aee-0c9a4ff12ad5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="StepTimer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Utility.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\IScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\PlayScene.h">
+      <Filter>Scene\PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\TitleScene\TitleScene.h">
+      <Filter>Scene\TitleScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CameraParam\CameraParam.h">
+      <Filter>Common\CameraParam</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DrawObject\DrawManager.h">
+      <Filter>Common\DrawObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DrawObject\DrawModel\DrawModel.h">
+      <Filter>Common\DrawObject\DrawModel</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DrawObject\DrawText\DrawText.h">
+      <Filter>Common\DrawObject\DrawText</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DrawObject\DrawTexture2D\DrawTexture2D.h">
+      <Filter>Common\DrawObject\DrawTexture2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DrawObject\DrawTexture3D\BinaryFile.h">
+      <Filter>Common\DrawObject\DrawTexture3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DrawObject\DrawTexture3D\DrawTexture3D.h">
+      <Filter>Common\DrawObject\DrawTexture3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\GetInstance\GetInstance.h">
+      <Filter>Common\GetInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\InputManager\InputManager.h">
+      <Filter>Common\InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\SoundManager\SoundManager.h">
+      <Filter>Common\SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Stage\StageRead.h">
+      <Filter>Scene\PlayScene\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Stage\StageDraw.h">
+      <Filter>Scene\PlayScene\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Collision\Collision.h">
+      <Filter>Scene\PlayScene\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\EnemyManager.h">
+      <Filter>Scene\PlayScene\EnemyManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\Enemy\Enemy.h">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Collision\CollisionManager.h">
+      <Filter>Scene\PlayScene\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Player\Player.h">
+      <Filter>Scene\PlayScene\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Unit.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\UnitManager.h">
+      <Filter>Scene\PlayScene\UnitManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\BulletManager\Bullet\Bullet.h">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\BulletManager\BulletManager.h">
+      <Filter>Scene\PlayScene\BulletManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EffectManager\EffectManager.h">
+      <Filter>Scene\PlayScene\EffectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EffectManager\Effect\Effect.h">
+      <Filter>Scene\PlayScene\EffectManager\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\UnitTypeBase.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\Enemy\EnemyTypeBase.h">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\Enemy\SpearSoldier.h">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\Enemy\Witch.h">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\EnemySpawnInformation.h">
+      <Filter>Scene\PlayScene\EnemyManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\BulletManager\Bullet\BulletTypeBase.h">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\BulletManager\Bullet\Slashing.h">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\BulletManager\Bullet\Shoot.h">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Stage\StageNum.h">
+      <Filter>Scene\PlayScene\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SelectScene\SelectScene.h">
+      <Filter>Scene\SelectScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\BulletManager\Bullet\Shooting.h">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\ResultScene\ResultScene.h">
+      <Filter>Scene\ResultScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\ResultScene\Resultdata.h">
+      <Filter>Scene\ResultScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\GameUI\GameUI.h">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\Enemy\Ninja.h">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\BulletManager\Bullet\CannonBall.h">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\BulletManager\Bullet\Magic.h">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\ResourceManager.h">
+      <Filter>Common\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DrawObject\DrawGeometry\DrawGeometry.h">
+      <Filter>Common\DrawObject\DrawGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\ResourceSound\SoundType.h">
+      <Filter>Common\ResourceManager\ResourceSound</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\ResourceSound\ResourceSound.h">
+      <Filter>Common\ResourceManager\ResourceSound</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\ResourceModel\ResourceModel.h">
+      <Filter>Common\ResourceManager\ResourceModel</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\ResourceModel\ModelType.h">
+      <Filter>Common\ResourceManager\ResourceModel</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\ResourceGeometry\GeometryType.h">
+      <Filter>Common\ResourceManager\ResourceGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\ResourceGeometry\ResourceGeometry.h">
+      <Filter>Common\ResourceManager\ResourceGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\Resource_3D_Texture\Texture_3D_Type.h">
+      <Filter>Common\ResourceManager\Resource_3D_Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\Resource_3D_Texture\Resource_3D_Texture.h">
+      <Filter>Common\ResourceManager\Resource_3D_Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\Resource_2D_Texture\Texture_2D_Type.h">
+      <Filter>Common\ResourceManager\Resource_2D_Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager\Resource_2D_Texture\Resource_2D_Texture.h">
+      <Filter>Common\ResourceManager\Resource_2D_Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\SoundManager\Adx2.h">
+      <Filter>Common\SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Collision\Capsule.h">
+      <Filter>Scene\PlayScene\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Stage\Object\Object.h">
+      <Filter>Scene\PlayScene\Stage\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Stage\Object\ObjectType.h">
+      <Filter>Scene\PlayScene\Stage\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Player\SpawnUnit.h">
+      <Filter>Scene\PlayScene\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Player\StageTileData.h">
+      <Filter>Scene\PlayScene\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Swordfighter\Swordfighter.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Swordfighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Gunner\Gunner.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Gunner</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Archer\Archer.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Archer</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\UnitType.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\BulletManager\Bullet\BulletType.h">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\UnitLevel.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Cannon\Cannon.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Cannon</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Wizard\Wizard.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Wizard</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\Enemy\EnemyType.h">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\Enemy\ArmoredSoldier.h">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\Enemy\Boss.h">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\EnemyManager\Enemy\EnemyLevel.h">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\AStar\AStar.h">
+      <Filter>Scene\PlayScene\AStar</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\GameUI\ArrowUI.h">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\GameUI\SummonUnitUI.h">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\GameUI\Reinforcement.h">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\DoubleSpeed\DoubleSpeed.h">
+      <Filter>Scene\PlayScene\DoubleSpeed</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Volume\Volume.h">
+      <Filter>Scene\PlayScene\Volume</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\TitleScene\TitleUI\TitleUI.h">
+      <Filter>Scene\TitleScene\TitleUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SelectScene\SelectUI\SelectUI.h">
+      <Filter>Scene\SelectScene\SelectUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\GameUI\StageInformation\StageInformation.h">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Shogun\Shogun.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Shogun</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\ItemManager\Item\ItemBase.h">
+      <Filter>Scene\PlayScene\ItemManager\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\ItemManager\Item\Item.h">
+      <Filter>Scene\PlayScene\ItemManager\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\ItemManager\ItemManager.h">
+      <Filter>Scene\PlayScene\ItemManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\ItemManager\Item\ItemType.h">
+      <Filter>Scene\PlayScene\ItemManager\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\ItemManager\Item\Pit\Pit.h">
+      <Filter>Scene\PlayScene\ItemManager\Item\Pit</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\ItemManager\Item\Mallet\Mallet.h">
+      <Filter>Scene\PlayScene\ItemManager\Item\Mallet</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\ItemManager\Item\Money\Money.h">
+      <Filter>Scene\PlayScene\ItemManager\Item\Money</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\TitleScene\TitleScene.cpp">
+      <Filter>Scene\TitleScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\PlayScene.cpp">
+      <Filter>Scene\PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\CameraParam\CameraParam.cpp">
+      <Filter>Common\CameraParam</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DrawObject\DrawManager.cpp">
+      <Filter>Common\DrawObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DrawObject\DrawModel\DrawModel.cpp">
+      <Filter>Common\DrawObject\DrawModel</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DrawObject\DrawText\DrawText.cpp">
+      <Filter>Common\DrawObject\DrawText</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DrawObject\DrawTexture2D\DrawTexture2D.cpp">
+      <Filter>Common\DrawObject\DrawTexture2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DrawObject\DrawTexture3D\BinaryFile.cpp">
+      <Filter>Common\DrawObject\DrawTexture3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DrawObject\DrawTexture3D\DrawTexture3D.cpp">
+      <Filter>Common\DrawObject\DrawTexture3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\GetInstance\GetInstance.cpp">
+      <Filter>Common\GetInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\InputManager\InputManager.cpp">
+      <Filter>Common\InputManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\SoundManager\SoundManager.cpp">
+      <Filter>Common\SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Stage\StageRead.cpp">
+      <Filter>Scene\PlayScene\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Stage\StageDraw.cpp">
+      <Filter>Scene\PlayScene\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Collision\Collision.cpp">
+      <Filter>Scene\PlayScene\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EnemyManager\EnemyManager.cpp">
+      <Filter>Scene\PlayScene\EnemyManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EnemyManager\Enemy\Enemy.cpp">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Collision\CollisionManager.cpp">
+      <Filter>Scene\PlayScene\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Player\Player.cpp">
+      <Filter>Scene\PlayScene\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\UnitManager\Unit\Unit.cpp">
+      <Filter>Scene\PlayScene\UnitManager\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\UnitManager\UnitManager.cpp">
+      <Filter>Scene\PlayScene\UnitManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\BulletManager\Bullet\Bullet.cpp">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\BulletManager\BulletManager.cpp">
+      <Filter>Scene\PlayScene\BulletManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EffectManager\EffectManager.cpp">
+      <Filter>Scene\PlayScene\EffectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EffectManager\Effect\Effect.cpp">
+      <Filter>Scene\PlayScene\EffectManager\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EnemyManager\EnemySpawnInformation.cpp">
+      <Filter>Scene\PlayScene\EnemyManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EnemyManager\Enemy\SpearSoldier.cpp">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EnemyManager\Enemy\Witch.cpp">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\BulletManager\Bullet\Slashing.cpp">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\BulletManager\Bullet\Shoot.cpp">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SelectScene\SelectScene.cpp">
+      <Filter>Scene\SelectScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\BulletManager\Bullet\Shooting.cpp">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\ResultScene\ResultScene.cpp">
+      <Filter>Scene\ResultScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\GameUI\GameUI.cpp">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EnemyManager\Enemy\Ninja.cpp">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\BulletManager\Bullet\CannonBall.cpp">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\BulletManager\Bullet\Magic.cpp">
+      <Filter>Scene\PlayScene\BulletManager\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ResourceManager\ResourceManager.cpp">
+      <Filter>Common\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DrawObject\DrawGeometry\DrawGeometry.cpp">
+      <Filter>Common\DrawObject\DrawGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ResourceManager\ResourceSound\ResourceSound.cpp">
+      <Filter>Common\ResourceManager\ResourceSound</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ResourceManager\ResourceModel\ResourceModel.cpp">
+      <Filter>Common\ResourceManager\ResourceModel</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ResourceManager\ResourceGeometry\ResourceGeometry.cpp">
+      <Filter>Common\ResourceManager\ResourceGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ResourceManager\Resource_3D_Texture\Resource_3D_Texture.cpp">
+      <Filter>Common\ResourceManager\Resource_3D_Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ResourceManager\Resource_2D_Texture\Resource_2D_Texture.cpp">
+      <Filter>Common\ResourceManager\Resource_2D_Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\SoundManager\Adx2.cpp">
+      <Filter>Common\SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Collision\Capsule.cpp">
+      <Filter>Scene\PlayScene\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Stage\Object\Object.cpp">
+      <Filter>Scene\PlayScene\Stage\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Player\SpawnUnit.cpp">
+      <Filter>Scene\PlayScene\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\UnitManager\Unit\Swordfighter\Swordfighter.cpp">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Swordfighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\UnitManager\Unit\Gunner\Gunner.cpp">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Gunner</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\UnitManager\Unit\Archer\Archer.cpp">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Archer</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\UnitManager\Unit\Cannon\Cannon.cpp">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Cannon</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\UnitManager\Unit\Wizard\Wizard.cpp">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EnemyManager\Enemy\ArmoredSoldier.cpp">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\EnemyManager\Enemy\Boss.cpp">
+      <Filter>Scene\PlayScene\EnemyManager\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\AStar\AStar.cpp">
+      <Filter>Scene\PlayScene\AStar</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\GameUI\ArrowUI.cpp">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\GameUI\SummonUnitUI.cpp">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\GameUI\Reinforcement.cpp">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\DoubleSpeed\DoubleSpeed.cpp">
+      <Filter>Scene\PlayScene\DoubleSpeed</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Volume\Volume.cpp">
+      <Filter>Scene\PlayScene\Volume</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\TitleScene\TitleUI\TitleUI.cpp">
+      <Filter>Scene\TitleScene\TitleUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SelectScene\SelectUI\SelectUI.cpp">
+      <Filter>Scene\SelectScene\SelectUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\GameUI\StageInformation\StageInformation.cpp">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\UnitManager\Unit\Shogun\Shogun.cpp">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Shogun</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\ItemManager\Item\Item.cpp">
+      <Filter>Scene\PlayScene\ItemManager\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\ItemManager\ItemManager.cpp">
+      <Filter>Scene\PlayScene\ItemManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\ItemManager\Item\Pit\Pit.cpp">
+      <Filter>Scene\PlayScene\ItemManager\Item\Pit</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\ItemManager\Item\Mallet\Mallet.cpp">
+      <Filter>Scene\PlayScene\ItemManager\Item\Mallet</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\ItemManager\Item\Money\Money.cpp">
+      <Filter>Scene\PlayScene\ItemManager\Item\Money</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="directx.ico">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.manifest">
+      <Filter>Assets</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Props\3DPG.props">
+      <Filter>Props</Filter>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Common\Particle.hlsli">
+      <Filter>Common</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Common\ParticleGS.hlsl">
+      <Filter>Common</Filter>
+    </FxCompile>
+    <FxCompile Include="Common\ParticlePS.hlsl">
+      <Filter>Common</Filter>
+    </FxCompile>
+    <FxCompile Include="Common\ParticleVS.hlsl">
+      <Filter>Common</Filter>
+    </FxCompile>
+    <FxCompile Include="Common\HoleEffect.hlsl">
+      <Filter>Common</Filter>
+    </FxCompile>
+    <FxCompile Include="Common\FadeEffect.hlsl">
+      <Filter>Common</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>

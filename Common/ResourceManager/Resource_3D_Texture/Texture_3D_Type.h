@@ -1,0 +1,28 @@
+#pragma once
+
+//3Dのテクスチャの種類
+enum class TEXTURE3D :int
+{
+	TRIDENTLOGO,
+	SHADOW,
+	TARGET,
+	ENEMY_HP,
+	POWER_UP_EFFECT,
+	PIT,
+	MALLET,
+	MONEY,
+	NUM0,
+	NUM1,
+	NUM2,
+	NUM3,
+	NUM4,
+	NUM5,
+	NUM6,
+	NUM7,
+	NUM8,
+	NUM9,
+	HIGHT,
+	VICTORY,
+	DEFEAT,
+	NONE,
+};
