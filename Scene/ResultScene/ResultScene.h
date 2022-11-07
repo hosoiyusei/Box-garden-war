@@ -2,6 +2,8 @@
 #include"Scene/IScene.h"
 #include"Scene/Utility.h"
 
+class Button;
+
 class ResultScene :public IScene
 {
 private:
@@ -9,6 +11,8 @@ private:
 	float mSceneFade;
 
 	VIEW mCameraView;
+
+	std::map<std::string, std::unique_ptr<Button>> mpButtons;
 
 public:
 

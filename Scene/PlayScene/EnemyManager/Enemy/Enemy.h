@@ -14,8 +14,10 @@ class EnemyTypeBase;
 class EffectManager;
 class Player;
 class ItemManager;
+class AStar;
+class EnemyManager;
 
-class Enemy:private AStar
+class Enemy
 {
 private:
 
@@ -42,6 +44,12 @@ private:
 
 	bool mGoal;
 
+	float mRandom_height;
+
+	float mRandom_rotation, mRandom_rotation2;
+	
+	float mFade_out;
+
 	ENEMY_TYPE mEnemyType;
 
 	//Enemyの状態
@@ -56,6 +64,10 @@ private:
 	//アイテムの管理者のポインタ
 	ItemManager* mpItemManager;
 
+	std::unique_ptr<AStar> mpAStar;
+
+	EnemyManager* mpEnemyManager;
+
 public:
 
 	//コンストラクタ
@@ -64,7 +76,12 @@ public:
 	~Enemy();
 
 	//初期化
-	void Initialize(StageRead* pStageRead, EffectManager* pEffectManager, Player* pPlayer, ItemManager* pItemManager);
+	void Initialize(
+		EnemyManager* pEnemyManager
+		, StageRead* pStageRead
+		, EffectManager* pEffectManager
+		, Player* pPlayer
+		, ItemManager* pItemManager);
 
 	//更新
 	void Update();
@@ -91,15 +108,15 @@ public:
 	void Damage(const int& damage, const BULLET_TYPE& type,const UNIT_LEVEL level);
 
 	//アクティブかどうかのフラグ
-	const bool& GetActive() { return mActive; }
+	const bool GetActive() { return mActive; }
 
 	//死亡しているかどうかのフラグ
-	const bool& GetDeath() { return mDeath; }
+	const bool GetDeath() { return mDeath; }
 
 	//Enemyの種類を取得
 	const ENEMY_TYPE& GetEnemyType() { return mEnemyType; }
 
-	const bool& GetGoal() { return mGoal; }
+	const bool GetGoal() { return mGoal; }
 
 private:
 

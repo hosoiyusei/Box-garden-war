@@ -18,22 +18,22 @@ public:
 	~CannonBall();
 
 	//’e‚ª—LŒø‚È‹——£
-	const float& GetLen() override { return 8.0f; }
+	const float GetLen() override { return 8.0f; }
 
 	//ƒXƒs[ƒh‚Ìİ’è
-	const float& GetSpeed()override { return 0.1f; }
+	const float GetSpeed()override { return 0.15f; }
 
 	//UŒ‚—Í
-	const int& GetOffensivePower()override { return mOffensivePower; }
+	const int GetOffensivePower()override { return mOffensivePower; }
 
 	//”­Ë
 	void Shot(const int& power, const float& angle, const DirectX::SimpleMath::Color& color, const UNIT_LEVEL& level)override;
 
 	//’e‚Ìí—Ş‚ğ•Ô‚·
-	const BULLET_TYPE& GetType()override { return BULLET_TYPE::CANNONBALL; }
+	const BULLET_TYPE GetType()override { return BULLET_TYPE::CANNONBALL; }
 
 	//’e‚ÌXV
-	void Update(EffectManager* pEffectManager)override {};
+	void Update(EffectManager* pEffectManager)override { UNREFERENCED_PARAMETER(pEffectManager); };
 
 	//’e‚Ì•`‰æ
 	void Draw(const DirectX::SimpleMath::Vector3& pos)override;

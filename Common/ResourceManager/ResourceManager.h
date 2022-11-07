@@ -8,10 +8,10 @@
 #include"Resource_3D_Texture/Texture_3D_Type.h"
 #include"ResourceSound/SoundType.h"
 #include"../Singleton.h"
+#include"ResourceModel/ResourceModel.h"
 
 //前方宣言
 class ResourceGeometry;
-class ResourceModel;
 class Resource_2D_Texture;
 class Resource_3D_Texture;
 class ResourceSound;
@@ -62,13 +62,15 @@ public:
 		const TEXTURE3D& Texture);
 
 	//サウンドの取得
-	const int& GetBGM(
+	const int GetBGM(
 		const SOUND_BGM& sound);
 
 	//サウンドの取得
-	const int& GetSE(
+	const int GetSE(
 		const SOUND_SE& sound);
 
 	//サウンドの名前を取得
 	const std::vector<const wchar_t*>& GetSoundName();
+
+	ResourceModel* GetResourceModel() { return mpResourceModel.get(); }
 };

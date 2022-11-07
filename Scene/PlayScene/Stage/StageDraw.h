@@ -35,5 +35,5 @@ public:
 	void Draw();
 
 	//プレイヤーのマウスレイキャストの当たり判定
-	const DirectX::SimpleMath::Vector3& ObjectCollision(const Capsule& playerCapsule);
+	const DirectX::SimpleMath::Vector3 ObjectCollision(const DirectX::SimpleMath::Vector3& playerCapsule);
 };

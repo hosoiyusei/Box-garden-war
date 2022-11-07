@@ -24,5 +24,9 @@ enum class TEXTURE3D :int
 	HIGHT,
 	VICTORY,
 	DEFEAT,
+	LAND,
+	GRASSLAND,
+	RANGE,
+	FADE3D,
 	NONE,
 };

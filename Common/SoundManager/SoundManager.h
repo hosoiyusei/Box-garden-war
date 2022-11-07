@@ -59,5 +59,5 @@ private:
 	DirectX::SoundEffectInstance* GetBGM(const SOUND_BGM& sound);
 
 	//SE‚ð•Ô‚·
-	const int& GetSE(const SOUND_SE& sound);
+	const int GetSE(const SOUND_SE& sound);
 };

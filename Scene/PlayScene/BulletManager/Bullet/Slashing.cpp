@@ -20,6 +20,9 @@ Slashing::~Slashing()
 //î≠éÀ
 void Slashing::Shot(const int& power, const float& angle, const DirectX::SimpleMath::Color& color, const UNIT_LEVEL& level)
 {
+	//åxçêèúÇØ
+	UNREFERENCED_PARAMETER(angle);
+	UNREFERENCED_PARAMETER(color);
 	mOffensivePower = power;
 	mLevel = level;
 }
@@ -28,5 +31,5 @@ void Slashing::Shot(const int& power, const float& angle, const DirectX::SimpleM
 void Slashing::Draw(const Vector3& pos)
 {
 	//åxçêèúÇØ
-	pos;
+	UNREFERENCED_PARAMETER(pos);
 }

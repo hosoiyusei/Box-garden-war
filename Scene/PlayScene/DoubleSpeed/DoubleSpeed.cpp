@@ -6,8 +6,3 @@ DoubleSpeed::DoubleSpeed()
 {
 
 }
-
-DoubleSpeed::~DoubleSpeed()
-{
-
-}

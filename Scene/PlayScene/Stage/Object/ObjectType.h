@@ -3,11 +3,11 @@
 //オブジェクトの種類
 enum class OBJECT_TYPE :int
 {
-	TYPE_0,
-	TYPE_1,
-	TYPE_2,
-	TYPE_3,
-	TYPE_4,
+	ROAD,
+	WALL,
+	PLACEMENT_SPACE,
+	ENEMY_GOAL,
+	ENEMY_START,
 
 	NONE,
 };

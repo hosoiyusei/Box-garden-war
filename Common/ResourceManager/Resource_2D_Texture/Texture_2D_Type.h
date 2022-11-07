@@ -3,9 +3,7 @@
 //2Dのテクスチャの種類
 enum class TEXTURE2D :int
 {
-	TRIDENTLOGO,
 	WINDOW,
-	ARROW,
 	PLUS,
 	MINUS,
 	SWORD,
@@ -33,5 +31,18 @@ enum class TEXTURE2D :int
 	DEFEAT,
 	WALL,
 	NUM,
+	STAGE_1,
+	STAGE_2,
+	STAGE_3,
+	STAGE_4,
+	TUTORIAL,
+	GAGE,
+	GAGE_FRAME,
+	TARGET,
+	MAXFASTFORWARD,
+	HEART,
+	GARBAGECAN,
+	human,
+	GEAR,
 	NONE,
 };

@@ -21,7 +21,7 @@ extern "C"
     __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;           // nVidia
     __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;     // AMD
 }
-static bool s_fullscreen = false;
+
 // Entry point
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -31,6 +31,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 #endif
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+
+    static bool s_fullscreen = false;
 
     if (!XMVerifyCPUSupport())
         return 1;

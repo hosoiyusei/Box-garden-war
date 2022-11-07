@@ -22,6 +22,8 @@ public:
 	const DirectX::Model* GetModel(
 		const MODEL_NAME& name);
 
+	void SetColor(const MODEL_NAME& name, const  DirectX::FXMVECTOR& color);
+
 private:
 
 	void AddResource(const wchar_t* textureName, const MODEL_NAME& name);

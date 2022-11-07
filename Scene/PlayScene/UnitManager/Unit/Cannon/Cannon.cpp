@@ -8,21 +8,10 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-//攻撃の間隔
-const int AttackInterval(120);
-//索敵距離
-const float SearchDistance(8.0f);
-
-//レベルアップにかかる時間
-const int LevelUpTime_Level_2(60);
-const int LevelUpTime_Level_3(120);
-const int LevelUpTime_Level_4(180);
-const int LevelUpTime_Level_5(240);
-
 //コンストラクタ
 Cannon::Cannon()
 	: mLevel(UNIT_LEVEL::LEVEL_1)
-	, mAngle(0.0f)
+	, mAngle(1.57f)
 	, mAttackTimer(0)
 	, mEnemyApproachingFlag(false)
 	, mReinforcementFlag(false)
@@ -31,6 +20,7 @@ Cannon::Cannon()
 	, mPowerUpLevel(UNIT_LEVEL::NONE)
 	, mPowerUpFlag(false)
 	, mEffectTimer(0)
+	, mEnhanced_timer_during_pause(0)
 {
 
 }
@@ -47,7 +37,7 @@ void Cannon::Spawn(const Vector3& pos)
 	//当たり判定の座標の設定
 	mSphereCollision.mPos = pos;
 
-	mSphereCollision.mRadius = 0.5f;
+	mSphereCollision.mRadius = mParam.mHit_test_size;
 }
 
 //レベルの設定
@@ -57,20 +47,6 @@ void Cannon::SetLevel(const UNIT_LEVEL& level)
 
 	mEnemyApproachingFlag = false;
 	mReinforcementFlag = true;
-}
-
-//エフェクトの色の設定
-const Vector3 Cannon::GetEffectColor()
-{
-	switch (mLevel)
-	{
-		case UNIT_LEVEL::LEVEL_1: {return Vector3(0.0f, 0.0f, 1.0f); break; }
-		case UNIT_LEVEL::LEVEL_2: {return Vector3(0.0f, 1.0f, 0.0f); break; }
-		case UNIT_LEVEL::LEVEL_3: {return Vector3(1.0f, 0.0f, 0.0f); break; }
-		case UNIT_LEVEL::LEVEL_4: {return Vector3(1.0f, 1.0f, 0.0f); break; }
-		case UNIT_LEVEL::LEVEL_5: {return Vector3(1.0f, 0.5f, 0.0f); break; }
-		default:break;
-	}
 }
 
 //更新
@@ -87,6 +63,15 @@ void Cannon::Update(
 	}
 	else
 	{
+		DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+
+		//一時停止中なら戻る
+		if (mpDoubleSpeed.GetExecutionFlag() == false)
+		{
+			mEnhanced_timer_during_pause++;
+			return;
+		}
+		mEnhanced_timer_during_pause = 0;
 		mReinforcementTimer++;
 
 		//強化を終了させる
@@ -95,7 +80,7 @@ void Cannon::Update(
 			mReinforcementFlag = false;
 			mReinforcementTimer = 0;
 
-			pEffectManager->Play_2(Vector3(pos.x, pos.y - 0.3f, pos.z), GetEffectColor(), 10, TEXTURE3D::SHADOW);
+			pEffectManager->Play_2(Vector3(pos.x, pos.y - mParam.mShift_the_coordinates_of_the_effect, pos.z), mColor, mParam.mNumber_of_effects_generated, TEXTURE3D::SHADOW);
 		}
 	}
 }
@@ -106,13 +91,20 @@ void Cannon::Draw(const Vector3& pos)
 	//モデルの描画
 	if (mReinforcementFlag == true)
 	{
+		DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+
 		//強化中は点滅させる
 		int Reinforcement = mReinforcementTimer;
-		Reinforcement %= 2;
-		if (Reinforcement == 0)
+
+		//一時停止中なら戻る
+		if (mpDoubleSpeed.GetExecutionFlag() == false)
 		{
-			return;
+			Reinforcement = mEnhanced_timer_during_pause;
 		}
+
+		Reinforcement %= mParam.mBlinkinginterval;
+
+		if (Reinforcement == 0)return;
 	}
 
 	DrawManager& pObject = DrawManager::GetInstance();
@@ -132,38 +124,38 @@ void Cannon::Draw(const Vector3& pos)
 	rightWheel = Matrix::Identity;
 
 	//砲身
-	barrel = Matrix::CreateScale(0.4f, 0.7f, 0.4f);
-	barrel *= Matrix::CreateRotationX(1.57f);
-	barrel *= Matrix::CreateRotationY(mAngle + 1.57f);
-	barrel *= Matrix::CreateTranslation(pos.x, pos.y + 0.3f, pos.z);
+	barrel = Matrix::CreateScale(mParam.mGun_tube_size);
+	barrel *= Matrix::CreateRotationX(mParam.mGun_tube_x_axis_rotation);
+	barrel *= Matrix::CreateRotationY(mAngle + mParam.mGun_tube_y_axis_rotation);
+	barrel *= Matrix::CreateTranslation(pos.x, pos.y + mParam.mGun_tube_coordinate_adjustment, pos.z);
 
 	pObject.GetGeometry()->Draw(barrel, SHAPE::CYLINDER,Colors::Black);
 
 	//銃口
-	muzzle = Matrix::CreateScale(1.0f,0.7f,1.0f);
-	muzzle *= Matrix::CreateRotationY(1.57f);
-	muzzle *= Matrix::CreateTranslation(0.0f, -0.5f, 0.0f);
+	muzzle = Matrix::CreateScale(mParam.mMuzzle_size);
+	muzzle *= Matrix::CreateRotationY(mParam.mMuzzle_y_axis_rotation);
+	muzzle *= Matrix::CreateTranslation(mParam.mMuzzle_coordinate);
 	muzzle *= barrel;
 
-	pObject.GetGeometry()->DrawSetColor(muzzle, SHAPE::TORUS, Color(GetEffectColor() * setcolor));
+	pObject.GetGeometry()->DrawSetColor(muzzle, SHAPE::TORUS, Color(mColor * setcolor));
 
 	//左車輪
-	leftWheel = Matrix::CreateScale(0.6f, 1.3f, 0.6f);
-	leftWheel *= Matrix::CreateRotationY(1.57f);
-	leftWheel *= Matrix::CreateRotationZ(1.57f);
-	leftWheel *= Matrix::CreateTranslation(0.7f, 0.2f, 0.0f);
+	leftWheel = Matrix::CreateScale(mParam.mWheel_size);
+	leftWheel *= Matrix::CreateRotationY(mParam.mWheel_y_axis_rotation_angle);
+	leftWheel *= Matrix::CreateRotationZ(mParam.mWheel_z_axis_rotation_angle);
+	leftWheel *= Matrix::CreateTranslation(mParam.mLeft_wheel_coordinate);
 	leftWheel *= barrel;
 
-	pObject.GetGeometry()->DrawSetColor(leftWheel, SHAPE::TORUS, Color(GetEffectColor() * setcolor));
+	pObject.GetGeometry()->DrawSetColor(leftWheel, SHAPE::TORUS, Color(mColor * setcolor));
 
 	//右車輪
-	rightWheel = Matrix::CreateScale(0.6f, 1.3f, 0.6f);
-	rightWheel *= Matrix::CreateRotationY(1.57f);
-	rightWheel *= Matrix::CreateRotationZ(1.57f);
-	rightWheel *= Matrix::CreateTranslation(-0.7f, 0.2f, 0.0f);
+	rightWheel = Matrix::CreateScale(mParam.mWheel_size);
+	rightWheel *= Matrix::CreateRotationY(mParam.mWheel_y_axis_rotation_angle);
+	rightWheel *= Matrix::CreateRotationZ(mParam.mWheel_y_axis_rotation_angle);
+	rightWheel *= Matrix::CreateTranslation(mParam.mRight_wheel_coordinate);
 	rightWheel *= barrel;
 
-	pObject.GetGeometry()->DrawSetColor(rightWheel, SHAPE::TORUS, Color(GetEffectColor() * setcolor));
+	pObject.GetGeometry()->DrawSetColor(rightWheel, SHAPE::TORUS, Color(mColor * setcolor));
 }
 
 //Unitのエフェクトの描画
@@ -174,23 +166,23 @@ void Cannon::EffectDraw(const DirectX::SimpleMath::Vector3& pos, EffectManager* 
 		DrawManager& pObject = DrawManager::GetInstance();
 
 		//発射間隔のゲージを描画
-		float length = ((static_cast<float>(AttackInterval - mAttackTimer) / static_cast<float>(AttackInterval))) * 0.8f;
+		float length = ((static_cast<float>(mParam.mAttack_interval - mAttackTimer) / static_cast<float>(mParam.mAttack_interval))) * 0.8f;
 
 		Matrix world = Matrix::Identity;
 		pObject.GetTexture3D()->DrawBillboard(world);
-		world *= Matrix::CreateScale(length, 0.1f, 0.1f);
-		world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y + 0.7f, pos.z - 0.2f));
-		pObject.GetTexture3D()->SetColor(1.0f);
+		world *= Matrix::CreateScale(mParam.Attack_interval_gauge_size(length));
+		world *= Matrix::CreateTranslation(mParam.Attack_interval_gauge_position(pos));
+		pObject.GetTexture3D()->SetColor(mParam.mAttack_interval_gauge_color);
 		pObject.GetTexture3D()->DrawShader(world, TEXTURE3D::ENEMY_HP);
 	}
 
 	if (mPowerUpFlag == true)
 	{
-		++mEffectTimer %= 60;
+		++mEffectTimer %= mParam.mPower_up_effect_timer;
 
 		if (mEffectTimer == 0)
 		{
-			pEffectManager->Play_3(Vector3(pos.x, pos.y - 0.5f, pos.z), Vector3(0.0f, 1.0f, 0.0f), 1, TEXTURE3D::POWER_UP_EFFECT, 0.05f, 1.0f);
+			pEffectManager->Play_3(mParam.Effect_coordinate(pos), mParam.mEffect_color_preference, mParam.mEffect_generation_number, TEXTURE3D::POWER_UP_EFFECT, mParam.mPower_up_effect_speed, mParam.mPower_up_effect_size);
 		}
 	}
 }
@@ -209,20 +201,24 @@ void Cannon::PowerUp(const SphereCollision& GetCollision, const UNIT_LEVEL& leve
 
 //攻撃
 void Cannon::Attack(EnemyManager* pEnemyManager, BulletManager* pBulletManager
-	, const DirectX::SimpleMath::Vector3& pos)
+	, const Vector3& pos)
 {
 	DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+
+	//一時停止中なら戻る
+	if (mpDoubleSpeed.GetExecutionFlag() == false)return;
+
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
 	//敵の座標
-	Vector3 EnemyPos = pEnemyManager->ClosestPos(pos);
+	Vector3 EnemyPos = pEnemyManager->ClosestPos(pos, ENEMY_TYPE::Witch);
 
 	//Enemyとの距離を取得
 	Vector3 Len = pos - EnemyPos;
 
 	for (int i = 0; i < mpDoubleSpeed.GetSpeed(); i++)
 	{
-		++mAttackTimer %= AttackInterval;
+		++mAttackTimer %= mParam.mAttack_interval;
 
 		if (mAttackTimer == 0)
 		{
@@ -240,25 +236,25 @@ void Cannon::Attack(EnemyManager* pEnemyManager, BulletManager* pBulletManager
 		}
 
 		//距離が近ければ発射
-		if (Len.Length() <= SearchDistance)
+		if (Len.Length() <= mParam.mAttack_range)
 		{
-			mEnemyApproachingFlag = true;
-			ENEMY_TYPE enemytype = pEnemyManager->ClosestPosEnemyType(pos);
-
-			//近いEnemyの方向を向く
-			if (enemytype != ENEMY_TYPE::Witch)//魔法使いでなければ
-			{
+			//敵のほうを向く
+			if (Len.Length() <= mParam.mAttack_range)
 				mAngle = -atan2f(pos.z - EnemyPos.z, pos.x - EnemyPos.x);
-			}
+
+			mEnemyApproachingFlag = true;
 
 			//弾を発射
-			if (enemytype != ENEMY_TYPE::Witch)//魔法使いでなければ
-			{
-				pBulletManager->Shot(pos, EnemyPos, BULLET_TYPE::CANNONBALL, GetOffensivePower() + PowerUpLevel(), mLevel);
+			pBulletManager->Shot(
+				pos
+				, EnemyPos
+				, BULLET_TYPE::CANNONBALL
+				, GetOffensivePower() + PowerUpLevel()
+				, mLevel
+				, Color(mColor));
 
-				//攻撃のSEの再生
-				soundmanager.SE_Run(SOUND_SE::SE_CANNON, SE_RUN::PLAY);
-			}
+			//攻撃のSEの再生
+			soundmanager.SE_Run(SOUND_SE::SE_CANNON, SE_RUN::PLAY);
 		}
 		else
 		{
@@ -268,16 +264,18 @@ void Cannon::Attack(EnemyManager* pEnemyManager, BulletManager* pBulletManager
 }
 
 //レベルアップにかかる時間
-const int& Cannon::LevelUpTime()
+const int Cannon::LevelUpTime()
 {
 	switch (mLevel)
 	{
-		case UNIT_LEVEL::LEVEL_2: {return LevelUpTime_Level_2; break; }
-		case UNIT_LEVEL::LEVEL_3: {return LevelUpTime_Level_3; break; }
-		case UNIT_LEVEL::LEVEL_4: {return LevelUpTime_Level_4; break; }
-		case UNIT_LEVEL::LEVEL_5: {return LevelUpTime_Level_5; break; }
+		case UNIT_LEVEL::LEVEL_2: {return mParam.mLevelUpTime_Level_2; break; }
+		case UNIT_LEVEL::LEVEL_3: {return mParam.mLevelUpTime_Level_3; break; }
+		case UNIT_LEVEL::LEVEL_4: {return mParam.mLevelUpTime_Level_4; break; }
+		case UNIT_LEVEL::LEVEL_5: {return mParam.mLevelUpTime_Level_5; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //攻撃力の設定
@@ -285,26 +283,30 @@ const int Cannon::GetOffensivePower()
 {
 	switch (mLevel)
 	{
-		case UNIT_LEVEL::LEVEL_1: {return 5; break; }
-		case UNIT_LEVEL::LEVEL_2: {return 9; break; }
-		case UNIT_LEVEL::LEVEL_3: {return 13; break; }
-		case UNIT_LEVEL::LEVEL_4: {return 17; break; }
-		case UNIT_LEVEL::LEVEL_5: {return 21; break; }
+		case UNIT_LEVEL::LEVEL_1: {return mParam.mAttack_power_when_level_1; break; }
+		case UNIT_LEVEL::LEVEL_2: {return mParam.mAttack_power_when_level_2; break; }
+		case UNIT_LEVEL::LEVEL_3: {return mParam.mAttack_power_when_level_3; break; }
+		case UNIT_LEVEL::LEVEL_4: {return mParam.mAttack_power_when_level_4; break; }
+		case UNIT_LEVEL::LEVEL_5: {return mParam.mAttack_power_when_level_5; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //パワーアップするレベル
-const int& Cannon::PowerUpLevel()
+const int Cannon::PowerUpLevel()
 {
 	switch (mPowerUpLevel)
 	{
-		case UNIT_LEVEL::LEVEL_1: {return 1; break; }
-		case UNIT_LEVEL::LEVEL_2: {return 2; break; }
-		case UNIT_LEVEL::LEVEL_3: {return 3; break; }
-		case UNIT_LEVEL::LEVEL_4: {return 4; break; }
-		case UNIT_LEVEL::LEVEL_5: {return 5; break; }
+		case UNIT_LEVEL::LEVEL_1: {return mParam.mAttack_power_ascend_in_power_up_1; break; }
+		case UNIT_LEVEL::LEVEL_2: {return mParam.mAttack_power_ascend_in_power_up_2; break; }
+		case UNIT_LEVEL::LEVEL_3: {return mParam.mAttack_power_ascend_in_power_up_3; break; }
+		case UNIT_LEVEL::LEVEL_4: {return mParam.mAttack_power_ascend_in_power_up_4; break; }
+		case UNIT_LEVEL::LEVEL_5: {return mParam.mAttack_power_ascend_in_power_up_5; break; }
 		case UNIT_LEVEL::NONE: {return 0; break; }
 		default:break;
 	}
+
+	return 0;
 }

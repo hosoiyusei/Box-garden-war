@@ -7,7 +7,6 @@ using namespace DirectX::SimpleMath;
 //コンストラクタ
 Object::Object()
 	: mPos()
-	, mCapsule()
 	, mType(OBJECT_TYPE::NONE)
 	, mWorld()
 {
@@ -25,23 +24,28 @@ void Object::Initialize(int stagetilenum)
 {
 	if (stagetilenum == 0)
 	{
-		mType = OBJECT_TYPE::TYPE_0;
+		//敵の通り道
+		mType = OBJECT_TYPE::ROAD;
 	}
 	else if (stagetilenum == 1)
 	{
-		mType = OBJECT_TYPE::TYPE_1;
+		//壁
+		mType = OBJECT_TYPE::WALL;
 	}
 	else if (stagetilenum == -1)
 	{
-		mType = OBJECT_TYPE::TYPE_2;
+		//Unit配置スペース
+		mType = OBJECT_TYPE::PLACEMENT_SPACE;
 	}
 	else if (stagetilenum == 2)
 	{
-		mType = OBJECT_TYPE::TYPE_3;
+		//敵の最終到達地点
+		mType = OBJECT_TYPE::ENEMY_GOAL;
 	}
 	else
 	{
-		mType = OBJECT_TYPE::TYPE_4;
+		//敵のスタート位置
+		mType = OBJECT_TYPE::ENEMY_START;
 	}
 }
 
@@ -52,11 +56,6 @@ void Object::SetPos(
 {
 	mPos.x = x;
 	mPos.z = z;
-
-	//Capsuleの当たり判定の設定
-	mCapsule.a = mPos;
-	mCapsule.b = mPos;
-	mCapsule.r = 0.6f;
 }
 
 //描画
@@ -67,36 +66,55 @@ void Object::Draw()
 	//ワールドの初期化
 	mWorld = Matrix::Identity;
 
+	pObject.GetTexture3D()->SetColor();
+
 	switch (mType)
 	{
-		case OBJECT_TYPE::TYPE_0:
+		case OBJECT_TYPE::ROAD:
 		{
-			mWorld = Matrix::CreateTranslation(mPos);
-			pObject.GetGeometry()->Draw(mWorld, SHAPE::CUBE, Colors::White);
+			mWorld *= Matrix::CreateRotationX(XMConvertToRadians(90.0f));
+			mWorld *= Matrix::CreateTranslation(mPos);
+			
+			pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::LAND);
 			break;
 		}
-		case OBJECT_TYPE::TYPE_1:
+		case OBJECT_TYPE::WALL:
 		{
 			mWorld *= Matrix::CreateScale(1.0f, 1.0f, 1.0f);
-			mWorld *= Matrix::CreateTranslation(mPos.x, 0.5f, mPos.z);
-			pObject.GetGeometry()->Draw(mWorld, SHAPE::CUBE, Colors::Gray);
+			mWorld *= Matrix::CreateTranslation(mPos.x, mPos.y-0.5f, mPos.z);
+			//pObject.GetModel()->Draw(mWorld, MODEL_NAME::WALL);
+
+			pObject.GetGeometry()->Draw(mWorld, SHAPE::CUBE, Colors::DarkGreen);
+
+			mWorld = Matrix::Identity;
+			mWorld *= Matrix::CreateScale(0.0035f);
+			mWorld *= Matrix::CreateTranslation(mPos.x, mPos.y + 0.2f, mPos.z);
+			pObject.GetModel()->Draw(mWorld, MODEL_NAME::tree);
 			break;
 		}
-		case OBJECT_TYPE::TYPE_2:
+		case OBJECT_TYPE::PLACEMENT_SPACE:
 		{
-			mWorld = Matrix::CreateTranslation(mPos.x, 0.1f, mPos.z);
-			pObject.GetGeometry()->Draw(mWorld, SHAPE::CUBE, Colors::LightGreen);
+			mWorld *= Matrix::CreateRotationX(XMConvertToRadians(90.0f));
+			mWorld *= Matrix::CreateTranslation(mPos);
+			//pObject.GetGeometry()->Draw(mWorld, SHAPE::CUBE, Colors::LightGreen);
+			pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::GRASSLAND);
 			break;
 		}
-		case OBJECT_TYPE::TYPE_3:
+		case OBJECT_TYPE::ENEMY_GOAL:
 		{
-			mWorld = Matrix::CreateTranslation(mPos);
+			mWorld *= Matrix::CreateTranslation(mPos.x, mPos.y - 0.5f, mPos.z);
 			pObject.GetGeometry()->Draw(mWorld, SHAPE::CUBE, Colors::Aqua);
+
+			mWorld = Matrix::Identity;
+			mWorld *= Matrix::CreateScale(0.0013f);
+			mWorld *= Matrix::CreateTranslation(mPos.x,mPos.y+0.4f,mPos.z);
+			
+			pObject.GetModel()->Draw(mWorld, MODEL_NAME::HOUSE);
 			break;
 		}
-		case OBJECT_TYPE::TYPE_4:
+		case OBJECT_TYPE::ENEMY_START:
 		{
-			mWorld = Matrix::CreateTranslation(mPos);
+			mWorld = Matrix::CreateTranslation(mPos.x, mPos.y - 0.5f, mPos.z);
 			pObject.GetGeometry()->Draw(mWorld, SHAPE::CUBE, Colors::Red);
 			break;
 		}
@@ -109,34 +127,41 @@ void Object::Draw()
 	}
 }
 
-const Vector3& Object::GetPos()
+//オブジェクトの座標を返す
+const Vector3 Object::GetPos()
 {
+	//オブジェクトごとの位置情報のずれ
+	const float Locationinformationofeachobject0 = 0.1f;
+	const float Locationinformationofeachobject1 = 0.1f;
+	const float Locationinformationofeachobject2 = 0.1f;
+	const float Locationinformationofeachobject3 = 0.1f;
+	const float Locationinformationofeachobject4 = 0.1f;
+
 	switch (mType)
 	{
-		case OBJECT_TYPE::TYPE_0:
+		case OBJECT_TYPE::ROAD:
 		{
-			return Vector3(mPos.x, mPos.y + 0.6f, mPos.z);
+			return Vector3(mPos.x, mPos.y + Locationinformationofeachobject0, mPos.z);
 			break;
 		}
-		case OBJECT_TYPE::TYPE_1:
+		case OBJECT_TYPE::WALL:
 		{
-			return Vector3(mPos.x, mPos.y + 1.1f, mPos.z);
+			return Vector3(mPos.x, mPos.y + Locationinformationofeachobject1, mPos.z);
 			break;
 		}
-		case OBJECT_TYPE::TYPE_2:
+		case OBJECT_TYPE::PLACEMENT_SPACE:
 		{
-			return Vector3(mPos.x, mPos.y + 0.7f, mPos.z);
+			return Vector3(mPos.x, mPos.y + Locationinformationofeachobject2, mPos.z);
 			break;
 		}
-		case OBJECT_TYPE::TYPE_3:
+		case OBJECT_TYPE::ENEMY_GOAL:
 		{
-			return Vector3(mPos.x, mPos.y + 0.6f, mPos.z);
+			return Vector3(mPos.x, mPos.y + Locationinformationofeachobject3, mPos.z);
 			break;
 		}
-		case OBJECT_TYPE::TYPE_4:
+		case OBJECT_TYPE::ENEMY_START:
 		{
-			return Vector3(mPos.x, mPos.y + 0.6f, mPos.z);
-			return mPos;
+			return Vector3(mPos.x, mPos.y + Locationinformationofeachobject4, mPos.z);
 			break;
 		}
 		default:

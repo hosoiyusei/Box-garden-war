@@ -10,6 +10,7 @@ Magic::Magic()
 	:mColor()
 	,mPos()
 	, mOffensivePower()
+	,mLevel()
 {
 
 }
@@ -24,7 +25,7 @@ Magic::~Magic()
 void Magic::Shot(const int& power, const float& angle, const DirectX::SimpleMath::Color& color, const UNIT_LEVEL& level)
 {
 	mColor = color;
-
+	UNREFERENCED_PARAMETER(angle);
 	mOffensivePower = power;
 	mLevel = level;
 }

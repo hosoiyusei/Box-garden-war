@@ -170,6 +170,15 @@
     <Filter Include="Scene\PlayScene\Volume">
       <UniqueIdentifier>{18642e00-71f4-43a9-9aee-0c9a4ff12ad5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\TitleScene\Button">
+      <UniqueIdentifier>{71ca5664-dcb6-4d22-9eb0-414af63d32e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\PlayScene\Tutorial">
+      <UniqueIdentifier>{ed4579c6-b64f-4388-bdd2-4da955de3b06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\SelectScene\SelectStageLoad">
+      <UniqueIdentifier>{c54aa791-dca8-4e60-9f17-1a4bb504425a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StepTimer.h">
@@ -460,6 +469,36 @@
     <ClInclude Include="Scene\PlayScene\ItemManager\Item\Money\Money.h">
       <Filter>Scene\PlayScene\ItemManager\Item\Money</Filter>
     </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Gunner\Gunner_Param.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Gunner</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Swordfighter\Swordfighter_Param.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Swordfighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Shogun\Shogun_Param.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Shogun</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Cannon\Cannon_Param.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Cannon</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\UnitManager\Unit\Archer\Archer_Param.h">
+      <Filter>Scene\PlayScene\UnitManager\Unit\Archer</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Player\Player_Param.h">
+      <Filter>Scene\PlayScene\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\TitleScene\Button\Button.h">
+      <Filter>Scene\TitleScene\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\Tutorial\Tutorial.h">
+      <Filter>Scene\PlayScene\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SelectScene\SelectStageLoad\SelectStageLoad.h">
+      <Filter>Scene\SelectScene\SelectStageLoad</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PlayScene\GameUI\PlaySetting.h">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceResources.cpp">
@@ -687,6 +726,18 @@
     <ClCompile Include="Scene\PlayScene\ItemManager\Item\Money\Money.cpp">
       <Filter>Scene\PlayScene\ItemManager\Item\Money</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\TitleScene\Button\Button.cpp">
+      <Filter>Scene\TitleScene\Button</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\Tutorial\Tutorial.cpp">
+      <Filter>Scene\PlayScene\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SelectScene\SelectStageLoad\SelectStageLoad.cpp">
+      <Filter>Scene\SelectScene\SelectStageLoad</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PlayScene\GameUI\PlaySetting.cpp">
+      <Filter>Scene\PlayScene\GameUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -705,10 +756,10 @@
     <None Include="Props\3DPG.props">
       <Filter>Props</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="Common\Particle.hlsli">
       <Filter>Common</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Common\ParticleGS.hlsl">

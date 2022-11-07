@@ -179,11 +179,11 @@ void DrawTexture3D::DrawShader(
 	ID3D11SamplerState* sampler[1] = { pGI.GetCommonStates()->LinearWrap() };
 	context->PSSetSamplers(0, 1, sampler);
 
-	//半透明描画指定
-	ID3D11BlendState* blendstate = pGI.GetCommonStates()->NonPremultiplied();
+	//半透明描画指定blendstate
+	blendstate = pGI.GetCommonStates()->NonPremultiplied();
 
 	// 透明判定処理
-	context->OMSetBlendState(blendstate, nullptr, 0xFFFFFFFF);
+	context->OMSetBlendState(blendstate.Get(), nullptr, 0xFFFFFFFF);
 
 	// 深度バッファに書き込み参照する
 	context->OMSetDepthStencilState(pGI.GetCommonStates()->DepthDefault(), 0);
@@ -250,10 +250,10 @@ void DrawTexture3D::HDrawShader(
 	context->PSSetSamplers(0, 1, sampler);
 
 	//半透明描画指定
-	ID3D11BlendState* blendstate = pGI.GetCommonStates()->NonPremultiplied();
+	blendstate = pGI.GetCommonStates()->NonPremultiplied();
 
 	// 透明判定処理
-	context->OMSetBlendState(blendstate, nullptr, 0xFFFFFFFF);
+	context->OMSetBlendState(blendstate.Get(), nullptr, 0xFFFFFFFF);
 
 	// 深度バッファに書き込み参照する
 	context->OMSetDepthStencilState(pGI.GetCommonStates()->DepthDefault(), 0);
@@ -319,10 +319,10 @@ void DrawTexture3D::MDrawShader(
 	context->PSSetSamplers(0, 1, sampler);
 
 	//半透明描画指定
-	ID3D11BlendState* blendstate = pGI.GetCommonStates()->NonPremultiplied();
+	blendstate = pGI.GetCommonStates()->NonPremultiplied();
 
 	// 透明判定処理
-	context->OMSetBlendState(blendstate, nullptr, 0xFFFFFFFF);
+	context->OMSetBlendState(blendstate.Get(), nullptr, 0xFFFFFFFF);
 
 	// 深度バッファに書き込み参照する
 	context->OMSetDepthStencilState(pGI.GetCommonStates()->DepthDefault(), 0);

@@ -13,7 +13,7 @@ void SoundManager::Read_Sound()
 #endif
 	m_audEngine = std::make_unique<DirectX::AudioEngine>(eflags);
 
-	for (int i = 0; i < pRm.GetSoundName().size(); i++)
+	for (size_t i = 0; i < pRm.GetSoundName().size(); i++)
 	{
 		// wavデータをロードする。
 		m_soundEffect.push_back(std::make_unique<DirectX::SoundEffect>(m_audEngine.get(), pRm.GetSoundName()[i]));
@@ -74,7 +74,7 @@ DirectX::SoundEffectInstance* SoundManager::GetBGM(
 }
 
 //SEの配列番号の取得
-const int& SoundManager::GetSE(
+const int SoundManager::GetSE(
 	const SOUND_SE& sound)
 {
 	ResourceManager& pRm = ResourceManager::GetInstance();

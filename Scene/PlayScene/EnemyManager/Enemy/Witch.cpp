@@ -29,6 +29,7 @@ Witch::Witch()
 	, mEnemy_Status2(Enemy_Status::generally)
 	, mCombustionTimer(0)
 	, mPos()
+	, mPos2()
 {
 
 }
@@ -40,17 +41,19 @@ Witch::~Witch()
 }
 
 //ÉGÉtÉFÉNÉgÇÃêFÇÃê›íË
-const DirectX::SimpleMath::Vector3 Witch::GetEffectColor()
+const Vector3 Witch::GetEffectColor()
 {
 	switch (mLevel)
 	{
-		case ENEMY_LEVEL::LEVEL1: {return DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f); break; }
-		case ENEMY_LEVEL::LEVEL2: {return DirectX::SimpleMath::Vector3(1.0f, 1.0f, 0.0f); break; }
-		case ENEMY_LEVEL::LEVEL3: {return DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f); break; }
-		case ENEMY_LEVEL::LEVEL4: {return DirectX::SimpleMath::Vector3(0.0f, 1.0f, 1.0f); break; }
-		case ENEMY_LEVEL::LEVEL5: {return DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f); break; }
+		case ENEMY_LEVEL::LEVEL1: {return Vector3(1.0f, 0.0f, 0.0f); break; }
+		case ENEMY_LEVEL::LEVEL2: {return Vector3(1.0f, 1.0f, 0.0f); break; }
+		case ENEMY_LEVEL::LEVEL3: {return Vector3(1.0f, 0.0f, 1.0f); break; }
+		case ENEMY_LEVEL::LEVEL4: {return Vector3(0.0f, 1.0f, 1.0f); break; }
+		case ENEMY_LEVEL::LEVEL5: {return Vector3(0.0f, 1.0f, 0.0f); break; }
 		default:break;
 	}
+
+	return Vector3();
 }
 
 //EnemyÇèoåªÇ≥ÇπÇÈ
@@ -64,76 +67,102 @@ void Witch::Spawn(EffectManager* pEffectManager, Player* pPlayer, const ENEMY_LE
 	mHP = SetHP();
 
 	mSpeed = ENEMY_SPEED;
+
+	mLeftHandPos = Vector3(-0.5f, -0.5f, 0.0f);
+	mRightHandPos = Vector3(-0.5f, -0.5f, -0.0f);
+	mSpearAngle = 1.0f;
+	mFloating += 0.1f;
 }
 
 //çXêV
 void Witch::Update()
 {
-	DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
-
-	mLeftHandPos = Vector3(-0.5f, -0.5f, 0.0f);
-	mRightHandPos = Vector3(-0.5f, -0.5f, -0.0f);
-	mSpearAngle = 1.0f;
-	//mHandAngle += 0.1f * mpDoubleSpeed.GetSpeed();
-	mFloating += 0.1f;
-
 	Processingofeachstate();
 	Processingofeachstate2();
 }
 
 //ï`âÊ
 void Witch::Draw(const Vector3& pos
-	, const float& angle)
+	, const float& angle, const float& fade)
 {
 	DrawManager& pObject = DrawManager::GetInstance();
+	ResourceManager& pRm = ResourceManager::GetInstance();
 
 	mPos = pos;
 
-	Vector3 Pos = Vector3(pos.x, pos.y + 1.0f+(sin(mFloating)*0.5f), pos.z);
+	Vector3 Pos = Vector3(pos.x, pos.y + 1.0f + (static_cast<float>(sin(mFloating)) * 0.5f), pos.z);
+
+	mPos2 = Pos;
 
 	Matrix body			//ì∑ëÃ
 		, head			//ì™
 		, leftHand		//ç∂éË
 		, rightHand		//âEéË
+		, Magichat		//ñXéq
 		, broom;		//‚¥
 
 	//ì∑
 	body = Matrix::CreateScale(0.8f);
 	body *= Matrix::CreateRotationY(angle);
+	if (mHP == 0)
+	{
+		body *= Matrix::CreateRotationX(angle);
+		body *= Matrix::CreateRotationZ(angle);
+	}
 	body *= Matrix::CreateTranslation(Pos);
 
-	pObject.GetGeometry()->DrawSetColor(body, SHAPE::CONE, Color(GetEffectColor()));
+	pObject.GetGeometry()->DrawSetColor(body, SHAPE::CONE, Color(GetEffectColor())*fade);
 
 	//ì™
 	head = Matrix::CreateScale(0.5f);
 	head *= Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
 	head *= body;
 
-	pObject.GetGeometry()->Draw(head, SHAPE::SPHERE, Colors::BurlyWood);
+	pObject.GetGeometry()->Draw(head, SHAPE::SPHERE, Colors::BurlyWood * fade);
 
 	//âEéË
 	rightHand = Matrix::CreateScale(0.3f);
 	rightHand *= Matrix::CreateTranslation(mRightHandPos);
-	rightHand *= Matrix::CreateRotationZ(XMConvertToRadians(sin(mHandAngle) * 50.0f));
+	rightHand *= Matrix::CreateRotationZ(XMConvertToRadians(static_cast<float>(sin(mHandAngle)) * 50.0f));
 	rightHand *= body;
 
-	pObject.GetGeometry()->Draw(rightHand, SHAPE::SPHERE, Colors::BurlyWood);
+	pObject.GetGeometry()->Draw(rightHand, SHAPE::SPHERE, Colors::BurlyWood * fade);
 
 	//ç∂éË
 	leftHand = Matrix::CreateScale(0.3f);
 	leftHand *= Matrix::CreateTranslation(mLeftHandPos);
-	leftHand *= Matrix::CreateRotationZ(XMConvertToRadians(-sin(mHandAngle) * 50.0f));
+	leftHand *= Matrix::CreateRotationZ(XMConvertToRadians(-static_cast<float>(sin(mHandAngle)) * 50.0f));
 	leftHand *= body;
 
-	pObject.GetGeometry()->Draw(leftHand, SHAPE::SPHERE, Colors::BurlyWood);
+	pObject.GetGeometry()->Draw(leftHand, SHAPE::SPHERE, Colors::BurlyWood * fade);
 
-	//‚¥
 	broom = Matrix::CreateScale(0.5f);
 	broom *= Matrix::CreateTranslation(Vector3(0.0f, 0.0f, -1.3f));
 	broom *= Matrix::CreateRotationY(-1.57f);
 	broom *= rightHand;
+	
+	Magichat *= Matrix::CreateScale(0.006f);
+	Magichat *= Matrix::CreateRotationY(XMConvertToRadians(-70.0f));
+	Magichat *= Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
+	Magichat *= head;
 
-	pObject.GetModel()->Draw(broom, MODEL_NAME::BROOM);
+	if (fade == 1.0f)
+	{
+		pObject.GetModel()->Draw(broom, MODEL_NAME::BROOM);
+		pObject.GetModel()->Draw(Magichat, MODEL_NAME::MAGICHAT);
+	}
+	else
+	{
+		static int fadetimer = 0;
+
+		++fadetimer %= 2;
+
+		if (fadetimer == 0)
+		{
+			pObject.GetModel()->Draw(broom, MODEL_NAME::BROOM);
+			pObject.GetModel()->Draw(Magichat, MODEL_NAME::MAGICHAT);
+		}
+	}
 }
 
 //ÉGÉtÉFÉNÉgÇÃï`âÊ
@@ -142,11 +171,13 @@ void Witch::EffectDraw(const Vector3& pos)
 	DrawManager& pObject = DrawManager::GetInstance();
 	pObject.GetTexture3D()->SetColor();
 
+	const float ShadowSize = mFloating * 0.5f; 
+
 	//âeÇÃï`âÊ
 	Matrix world = Matrix::Identity;
-	world *= Matrix::CreateScale(1.0f);
+	world *= Matrix::CreateScale(abs(static_cast<float>(cos(ShadowSize))) + 0.2f);
 	world *= Matrix::CreateRotationX(-1.57f);
-	world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y - 0.4f, pos.z));
+	world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y - 0.9f, pos.z));
 	pObject.GetTexture3D()->DrawShader(world, TEXTURE3D::SHADOW);
 
 	//HPÉQÅ[ÉWÇÃï`âÊ
@@ -158,31 +189,26 @@ void Witch::EffectDraw(const Vector3& pos)
 	world = Matrix::Identity;
 	pObject.GetTexture3D()->DrawBillboard(world);
 	world *= Matrix::CreateScale((HP / MaxHP), 0.1f, 0.1f);
-	world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y + 1.8f, pos.z - 0.3f));
+	world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y + 2.4f, pos.z - 0.3f));
 
 	pObject.GetTexture3D()->DrawShader(world, TEXTURE3D::ENEMY_HP);
 
 	switch (mEnemy_Status)
 	{
-		case Enemy_Status::combustion: {mpEffectManager->Play(pos, Vector3(1.0f, 0.0f, 0.0f), 1, TEXTURE3D::SHADOW, 0.003f, 0.1f); break; }
-		case Enemy_Status::Slowfoot: {mpEffectManager->Play(pos, Vector3(1.0f, 0.0f, 1.0f), 1, TEXTURE3D::SHADOW, 0.003f, 0.1f); break; }
-		case Enemy_Status::generally: {break; }
-		default:break;
-	}
-
-	switch (mEnemy_Status2)
-	{
-		case Enemy_Status::combustion: {mpEffectManager->Play(pos, Vector3(1.0f, 0.0f, 0.0f), 1, TEXTURE3D::SHADOW, 0.003f, 0.1f); break; }
-		case Enemy_Status::Slowfoot: {mpEffectManager->Play(pos, Vector3(1.0f, 0.0f, 1.0f), 1, TEXTURE3D::SHADOW, 0.003f, 0.1f); break; }
+		case Enemy_Status::combustion: {mpEffectManager->Play(mPos2, Vector3(1.0f, 0.0f, 0.0f), 1, TEXTURE3D::SHADOW, 0.003f, 0.1f); break; }
+		case Enemy_Status::Slowfoot: {mpEffectManager->Play(mPos2, Vector3(1.0f, 0.0f, 1.0f), 1, TEXTURE3D::SHADOW, 0.003f, 0.1f); break; }
 		case Enemy_Status::generally: {break; }
 		default:break;
 	}
 }
 
 //DamageÇÃèàóù
-const bool& Witch::Damage(const DirectX::SimpleMath::Vector3& pos
+const bool Witch::Damage(const DirectX::SimpleMath::Vector3& pos
 	, const int& damage, const BULLET_TYPE& type, const UNIT_LEVEL& level)
 {
+	UNREFERENCED_PARAMETER(level);
+
+
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
 	//EnemyÇ™ñ≥ìGÇ≈Ç»Ç¢Ç»ÇÁ
@@ -192,41 +218,38 @@ const bool& Witch::Damage(const DirectX::SimpleMath::Vector3& pos
 	}
 	else
 	{
-		mHP -= damage * 0.5f;
+		mHP -= static_cast<int>(static_cast<float>(damage) * 0.5f);
 	}
 
 	soundmanager.SE_Run(SOUND_SE::SE_DAMAGE, SE_RUN::PLAY);
 
 	//ìñÇΩÇ¡ÇΩçUåÇÇ™åïÇæÇ¡ÇΩÇÁ
-	if (level == UNIT_LEVEL::LEVEL_3 || level == UNIT_LEVEL::LEVEL_4 || level == UNIT_LEVEL::LEVEL_5)
+	if (mEnemy_Status == Enemy_Status::generally)
 	{
-		if (mEnemy_Status == Enemy_Status::generally)
+		if (type == BULLET_TYPE::SLASHING)
 		{
-			if (type == BULLET_TYPE::SLASHING)
-			{
-				mEnemy_Status = Enemy_Status::Slowfoot;
-				SlowFoot();
-			}
-			else if (type == BULLET_TYPE::SHOOT)
-			{
-				//îRèƒ
-				mEnemy_Status = Enemy_Status::combustion;
-				Combustion();
-			}
+			mEnemy_Status = Enemy_Status::Slowfoot;
+			SlowFoot();
 		}
-		else if (mEnemy_Status2 == Enemy_Status::generally)
+		else if (type == BULLET_TYPE::SHOOT)
 		{
-			if (type == BULLET_TYPE::SLASHING)
-			{
-				mEnemy_Status2 = Enemy_Status::Slowfoot;
-				SlowFoot();
-			}
-			else if (type == BULLET_TYPE::SHOOT)
-			{
-				//îRèƒ
-				mEnemy_Status2 = Enemy_Status::combustion;
-				Combustion();
-			}
+			//îRèƒ
+			mEnemy_Status = Enemy_Status::combustion;
+			Combustion();
+		}
+	}
+	else if (mEnemy_Status2 == Enemy_Status::generally)
+	{
+		if (type == BULLET_TYPE::SLASHING)
+		{
+			mEnemy_Status2 = Enemy_Status::Slowfoot;
+			SlowFoot();
+		}
+		else if (type == BULLET_TYPE::SHOOT)
+		{
+			//îRèƒ
+			mEnemy_Status2 = Enemy_Status::combustion;
+			Combustion();
 		}
 	}
 
@@ -248,7 +271,7 @@ const bool& Witch::Damage(const DirectX::SimpleMath::Vector3& pos
 }
 
 //éÄÇÒÇ≈Ç¢ÇÈÇ©Ç«Ç§Ç©
-const bool& Witch::Whetherdead()
+const bool Witch::Whetherdead()
 {
 	//HPÇ™0Ç¢Ç©Ç…Ç»Ç¡ÇΩÇÁéEÇ∑
 	if (mHP <= 0)
@@ -256,7 +279,7 @@ const bool& Witch::Whetherdead()
 		mHP = 0;
 
 		//ÉGÉtÉFÉNÉgÇÃé¿çs
-		mpEffectManager->Play(mPos, GetEffectColor(), 20, TEXTURE3D::SHADOW);
+		mpEffectManager->Play(mPos, GetEffectColor(), 15, TEXTURE3D::SHADOW);
 
 		//ã‡ÇëùÇ‚Ç∑
 		mpPlayer->SetMoney(GetMoney());
@@ -273,7 +296,7 @@ const bool& Witch::Whetherdead()
 void Witch::SlowFoot()
 {
 	mSlowFootTimer = 0;
-	mSpeed = ENEMY_SPEED * 0.5f;
+	mSpeed = ENEMY_SPEED * 0.6f;
 }
 
 //îRèƒèÛë‘
@@ -283,31 +306,35 @@ void Witch::Combustion()
 }
 
 //HPÇÃê›íË
-const int& Witch::SetHP()
+const int Witch::SetHP()
 {
 	switch (mLevel)
 	{
-		case ENEMY_LEVEL::LEVEL1: {return 10; break; }
-		case ENEMY_LEVEL::LEVEL2: {return 20; break; }
-		case ENEMY_LEVEL::LEVEL3: {return 30; break; }
+		case ENEMY_LEVEL::LEVEL1: {return 2; break; }
+		case ENEMY_LEVEL::LEVEL2: {return 6; break; }
+		case ENEMY_LEVEL::LEVEL3: {return 25; break; }
 		case ENEMY_LEVEL::LEVEL4: {return 40; break; }
-		case ENEMY_LEVEL::LEVEL5: { return 60; break; }
+		case ENEMY_LEVEL::LEVEL5: { return 50; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //ã‡
-const int& Witch::GetMoney()
+const int Witch::GetMoney()
 {
 	switch (mLevel)
 	{
-		case ENEMY_LEVEL::LEVEL1: {return 7; break; }
-		case ENEMY_LEVEL::LEVEL2: {return 8; break; }
-		case ENEMY_LEVEL::LEVEL3: {return 9; break; }
-		case ENEMY_LEVEL::LEVEL4: {return 10; break; }
-		case ENEMY_LEVEL::LEVEL5: {return 11; break; }
+		case ENEMY_LEVEL::LEVEL1: {return 8; break; }
+		case ENEMY_LEVEL::LEVEL2: {return 9; break; }
+		case ENEMY_LEVEL::LEVEL3: {return 10; break; }
+		case ENEMY_LEVEL::LEVEL4: {return 11; break; }
+		case ENEMY_LEVEL::LEVEL5: {return 12; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //èÛë‘Ç≤Ç∆ÇÃèàóù
@@ -321,10 +348,12 @@ void Witch::Processingofeachstate()
 
 			int time = mCombustionTimer;
 
-			time %= 60;
+			time %= 100;
+
+			//îRèƒÉ_ÉÅÅ[ÉWÇó^Ç¶ÇÈ
 			if (time == 0)
 			{
-				mHP -= 2;
+				mHP -= 1;
 			}
 
 			if (mCombustionTimer >= 300)
@@ -364,16 +393,20 @@ void Witch::Processingofeachstate2()
 	{
 		case Enemy_Status::combustion:
 		{
+			//îRèƒ
 			mCombustionTimer++;
 
 			int time = mCombustionTimer;
 
-			time %= 60;
+			time %= 100;
+
+			//îRèƒÉ_ÉÅÅ[ÉWÇó^Ç¶ÇÈ
 			if (time == 0)
 			{
-				mHP -= 2;
+				mHP -= 1;
 			}
 
+			//îRèƒÇâèú
 			if (mCombustionTimer >= 300)
 			{
 				mCombustionTimer = 0;
@@ -388,7 +421,7 @@ void Witch::Processingofeachstate2()
 			mSlowFootTimer++;
 
 			//ì›ë´èÛë‘Çâèú
-			if (mSlowFootTimer >= 300)
+			if (mSlowFootTimer >= 180)
 			{
 				mSlowFootTimer = 0;
 				mSpeed = ENEMY_SPEED;

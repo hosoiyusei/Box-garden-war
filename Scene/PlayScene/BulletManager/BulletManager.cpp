@@ -5,7 +5,7 @@
 #include"Bullet/Bullet.h"
 
 //弾の数
-const int BULLET_NUM(150);
+const int BULLET_NUM(50);
 
 //コンストラクタ
 BulletManager::BulletManager()
@@ -32,7 +32,7 @@ void BulletManager::Initialize(EffectManager* pEffectManager)
 //更新
 void BulletManager::Update()
 {
-	for (int i = 0; i < static_cast<int>(mpBullet.size()); i++)
+	for (size_t i = 0; i < mpBullet.size(); i++)
 	{
 		//アクティブだったら更新
 		if (mpBullet[i]->GetActive() == true)
@@ -45,7 +45,7 @@ void BulletManager::Update()
 //描画
 void BulletManager::Draw()
 {
-	for (int i = 0; i < static_cast<int>(mpBullet.size()); i++)
+	for (size_t i = 0; i < mpBullet.size(); i++)
 	{
 		//アクティブだったら描画
 		if (mpBullet[i]->GetActive() == true)
@@ -64,7 +64,7 @@ void BulletManager::Shot(
 	, const UNIT_LEVEL& level
 	, DirectX::SimpleMath::Color color)
 {
-	for (int i = 0; i < static_cast<int>(mpBullet.size()); i++)
+	for (size_t i = 0; i < mpBullet.size(); i++)
 	{
 		if (mpBullet[i]->GetActive() == false)
 		{
@@ -75,24 +75,19 @@ void BulletManager::Shot(
 }
 
 //弾の当たり判定
-bool BulletManager::CheckHitCollision(
+void BulletManager::CheckHitCollision(
 	 Enemy* pEnemy)
 {
-	for (int i = 0; i < static_cast<int>(mpBullet.size()); i++)
+	for (size_t i = 0; i < mpBullet.size(); i++)
 	{
 		if (mpBullet[i]->GetActive() == true)
 		{
-			if(pEnemy->GetCollision().CheckHit(
-				mpBullet[i]->GetCollision())==true)
+			if (pEnemy->GetCollision().CheckHit(
+				mpBullet[i]->GetCollision()) == true)
 			{
-				
 				//当たったらダメージを与える
 				pEnemy->Damage(mpBullet[i]->Hit(), mpBullet[i]->GetBulletType(),mpBullet[i]->GetLevel());
-
-				return true;
 			}
 		}
 	}
-
-	return false;
 }

@@ -17,19 +17,13 @@ void Resource_3D_Texture::Read_3D_Texture()
 	AddResource(L"Resources/Textures/Pit.png", TEXTURE3D::PIT);
 	AddResource(L"Resources/Textures/Mallet.png", TEXTURE3D::MALLET);
 	AddResource(L"Resources/Textures/Money.png", TEXTURE3D::MONEY);
-	AddResource(L"Resources/Textures/0.png", TEXTURE3D::NUM0);
-	AddResource(L"Resources/Textures/1.png", TEXTURE3D::NUM1);
-	AddResource(L"Resources/Textures/2.png", TEXTURE3D::NUM2);
-	AddResource(L"Resources/Textures/3.png", TEXTURE3D::NUM3);
-	AddResource(L"Resources/Textures/4.png", TEXTURE3D::NUM4);
-	AddResource(L"Resources/Textures/5.png", TEXTURE3D::NUM5);
-	AddResource(L"Resources/Textures/6.png", TEXTURE3D::NUM6);
-	AddResource(L"Resources/Textures/7.png", TEXTURE3D::NUM7);
-	AddResource(L"Resources/Textures/8.png", TEXTURE3D::NUM8);
-	AddResource(L"Resources/Textures/9.png", TEXTURE3D::NUM9);
 	AddResource(L"Resources/Textures/hight.jpg", TEXTURE3D::HIGHT);
 	AddResource(L"Resources/Textures/victory.png", TEXTURE3D::VICTORY);
 	AddResource(L"Resources/Textures/defeat.png", TEXTURE3D::DEFEAT);
+	AddResource(L"Resources/Textures/Grassland.jpeg", TEXTURE3D::GRASSLAND);
+	AddResource(L"Resources/Textures/land.png", TEXTURE3D::LAND);
+	AddResource(L"Resources/Textures/range.png", TEXTURE3D::RANGE);
+	AddResource(L"Resources/Textures/Fade3D.png", TEXTURE3D::FADE3D);
 }
 
 //テクスチャを返す

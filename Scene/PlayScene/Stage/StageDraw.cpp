@@ -51,6 +51,8 @@ void StageDraw::Initialize(StageRead* pStageRead)
 //描画
 void StageDraw::Draw()
 {
+	DrawManager& pObject = DrawManager::GetInstance();
+
 	for (int y = 0; y < mpStageRead->GetVertical(); y++)
 	{
 		for (int x = 0; x < mpStageRead->GetHorizontal(); x++)
@@ -59,18 +61,29 @@ void StageDraw::Draw()
 			mpObject[y][x]->Draw();
 		}
 	}
+
+	Matrix world;
+
+	world = Matrix::Identity;
+	world *= Matrix::CreateScale(18.0f,18.0f,24.0f);
+	world *= Matrix::CreateTranslation(
+		static_cast<float>(mpStageRead->GetHorizontal()) / 2.0f, -5.0f
+		, static_cast<float>(mpStageRead->GetVertical()) / 2.0f);
+	pObject.GetModel()->Draw(world, MODEL_NAME::BOX);
 }
 
 //プレイヤーのマウスレイキャストの当たり判定
-const DirectX::SimpleMath::Vector3& StageDraw::ObjectCollision(
-	const Capsule& playerCapsule)
+const DirectX::SimpleMath::Vector3 StageDraw::ObjectCollision(
+	const Vector3& playerCapsule)
 {
 	for (int y = 0; y < mpStageRead->GetVertical(); y++)
 	{
 		for (int x = 0; x < mpStageRead->GetHorizontal(); x++)
 		{
-			//マウスのレイと当たっていたら
-			if (mpObject[y][x]->CheckHitCollision(playerCapsule) == true)
+			if (mpObject[y][x]->GetPos().x + 0.5f > playerCapsule.x &&
+				mpObject[y][x]->GetPos().x - 0.5f < playerCapsule.x &&
+				mpObject[y][x]->GetPos().z + 0.5f > playerCapsule.z &&
+				mpObject[y][x]->GetPos().z - 0.5f < playerCapsule.z)
 			{
 				//オブジェクトの座標を返す
 				return mpObject[y][x]->GetPos();
@@ -80,6 +93,5 @@ const DirectX::SimpleMath::Vector3& StageDraw::ObjectCollision(
 		}
 	}
 
-	//当たっていなかったら適当な座標を返す
-	//return Vector3(0.0f, 0.0f, 10000);
+	return Vector3(0.0f,0.1f,0.0f);
 }

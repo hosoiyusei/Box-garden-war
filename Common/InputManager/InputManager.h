@@ -16,6 +16,16 @@ private:
 	DirectX::Keyboard::State mKeyboardState;
 
 public:
+	InputManager()
+		:mMouse()
+		, mButtonStateTracker()
+		, mMouseState()
+		, mKeyboard()
+		, mKeyboardStateTracker()
+		, mKeyboardState()
+	{
+
+	}
 	//‰Šú‰»
 	void Initialize();
 

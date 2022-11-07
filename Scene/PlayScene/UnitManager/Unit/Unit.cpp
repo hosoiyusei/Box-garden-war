@@ -71,11 +71,11 @@ void Unit::Draw()
 //Unitのエフェクトの描画
 void Unit::EffectDraw()
 {
-	mpUnitTypeBase->EffectDraw(mPos,mpEffectManager);
+	mpUnitTypeBase->EffectDraw(mPos, mpEffectManager);
 }
 
 //スポーン
-void Unit::Spawn(const DirectX::SimpleMath::Vector3& pos, const UNIT_TYPE& type)
+void Unit::Spawn(const Vector3& pos, const UNIT_TYPE& type)
 {
 	//状態を設定
 	SetType(type);
@@ -95,7 +95,9 @@ void Unit::Spawn(const DirectX::SimpleMath::Vector3& pos, const UNIT_TYPE& type)
 	mActive = true;
 
 	//エフェクトの実行
-	mpEffectManager->Play_2(Vector3(mPos.x, mPos.y - 0.3f, mPos.z), mpUnitTypeBase->GetEffectColor(), 10, TEXTURE3D::SHADOW);
+	mpEffectManager->Play_2(Vector3(mPos.x, mPos.y - 0.3f, mPos.z), GetEffectColor(), 10, TEXTURE3D::SHADOW);
+
+	mpUnitTypeBase->SetColor(GetEffectColor());
 }
 
 //Unitのレベルの設定
@@ -103,6 +105,7 @@ void Unit::SetUnitLevel(const UNIT_LEVEL& level)
 {
 	mLevel = level;
 	mpUnitTypeBase->SetLevel(level);
+	mpUnitTypeBase->SetColor(GetEffectColor());
 }
 
 //ユニットの除外
@@ -113,13 +116,19 @@ void Unit::Delete()
 }
 
 //強化中のフラグを返す
-const bool& Unit::GetReinforcementFlag(){return mpUnitTypeBase->GetReinforcementFlag();}
+const bool Unit::GetReinforcementFlag(){return mpUnitTypeBase->GetReinforcementFlag();}
 
 //当たり判定を返す
-const SphereCollision& Unit::GetCollision() { return mpUnitTypeBase->GetCollision(); }
+const SphereCollision Unit::GetCollision() { return mpUnitTypeBase->GetCollision(); }
 
 //Unitのパワーアップ
 void Unit::PowerUp(const SphereCollision& GetCollision, const UNIT_LEVEL& level) { mpUnitTypeBase->PowerUp(GetCollision, level); }
+
+//パワーアップの解除
+void Unit::Release_power_ups() { mpUnitTypeBase->Release_power_ups(); }
+
+//攻撃力
+const int Unit::GetPower() { return mpUnitTypeBase->GetPower(); }
 
 /**********************************************************************************/
 
@@ -135,8 +144,23 @@ void Unit::SetType(const UNIT_TYPE& type)
 		case UNIT_TYPE::ARCHER:			{mpUnitTypeBase = std::make_unique<Archer>();		break; }
 		case UNIT_TYPE::GUNNER:			{mpUnitTypeBase = std::make_unique<Gunner>();		break; }
 		case UNIT_TYPE::CANNON:			{mpUnitTypeBase = std::make_unique<Cannon>();		break; }
-		case UNIT_TYPE::WIZARD:			{mpUnitTypeBase = std::make_unique<Wizard>();		break; }
 		case UNIT_TYPE::SHOGUN:			{mpUnitTypeBase = std::make_unique<Shogun>();		break; }
 		default:break;
 	}
+}
+
+//エフェクトの色の設定
+const Vector3 Unit::GetEffectColor()
+{
+	switch (mLevel)
+	{
+		case UNIT_LEVEL::LEVEL_1: {return Vector3(0.0f, 0.0f, 1.0f); break; }
+		case UNIT_LEVEL::LEVEL_2: {return Vector3(0.0f, 1.0f, 0.0f); break; }
+		case UNIT_LEVEL::LEVEL_3: {return Vector3(1.0f, 0.0f, 0.0f); break; }
+		case UNIT_LEVEL::LEVEL_4: {return Vector3(1.0f, 1.0f, 0.0f); break; }
+		case UNIT_LEVEL::LEVEL_5: {return Vector3(1.0f, 0.5f, 0.0f); break; }
+		default:break;
+	}
+
+	return Vector3();
 }

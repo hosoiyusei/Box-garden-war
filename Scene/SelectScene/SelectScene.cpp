@@ -27,48 +27,17 @@ SelectScene::~SelectScene()
 void SelectScene::Initialize()
 {
 	mpSelectUI = std::make_unique<SelectUI>();
+
+	mpSelectUI->Initialize();
 }
 
 //XV
 GAME_SCENE SelectScene::Update(const DX::StepTimer& timer)
 {
-	timer;//Œxœ‚¯
-	InputManager& inputManager = InputManager::GetInstance();
-
-	StageNum& setstage = StageNum::GetInstance();
+	UNREFERENCED_PARAMETER(timer);
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
-	int mouseX = inputManager.GetMouseState().x;
-	int mouseY = inputManager.GetMouseState().y;
-
-	if (mouseX > 100 && mouseX < 400 && mouseY>100 && mouseY < 200 &&
-		inputManager.GetButtonStateTracker()->leftButton == inputManager.GetButtonStateTracker()->PRESSED)
-	{
-		setstage.SetStage(0);
-		mMoveFadeFlag = true;
-		//return GAME_SCENE::PLAY;
-	}
-	else if (mouseX > 100 && mouseX < 400 && mouseY>250 && mouseY < 350 &&
-		inputManager.GetButtonStateTracker()->leftButton == inputManager.GetButtonStateTracker()->PRESSED)
-	{
-		setstage.SetStage(1);
-		mMoveFadeFlag = true;
-		//return GAME_SCENE::PLAY;
-	}
-	else if (mouseX > 100 && mouseX < 400 && mouseY>400 && mouseY < 500 &&
-		inputManager.GetButtonStateTracker()->leftButton == inputManager.GetButtonStateTracker()->PRESSED)
-	{
-		setstage.SetStage(2);
-		mMoveFadeFlag = true;
-		//return GAME_SCENE::PLAY;
-	}
-	else if (mouseX > 100 && mouseX < 400 && mouseY>550 && mouseY < 650&&
-		inputManager.GetButtonStateTracker()->leftButton == inputManager.GetButtonStateTracker()->PRESSED)
-	{
-		setstage.SetStage(3);
-		mMoveFadeFlag = true;
-		//return GAME_SCENE::PLAY;
-	}
+	mMoveFadeFlag = mpSelectUI->Update();
 
 	if (mMoveFadeFlag == true && mSceneFade > 0.0f)
 	{
@@ -80,7 +49,7 @@ GAME_SCENE SelectScene::Update(const DX::StepTimer& timer)
 		return GAME_SCENE::PLAY;
 	}
 
-	return GAME_SCENE::NONE;
+	return mpSelectUI->Title_Back();
 }
 
 

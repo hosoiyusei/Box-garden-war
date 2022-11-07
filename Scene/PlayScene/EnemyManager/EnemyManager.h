@@ -11,16 +11,17 @@ class EnemySpawnInformation;
 class EffectManager;
 class Player;
 class ItemManager;
+class Tutorial;
 
 class EnemyManager final
 {
 private:
 
+	//残りの敵の数
+	int mNumber_of_remaining_Enemy;
+
 	//Enemyの配列
 	std::vector<std::unique_ptr<Enemy>> mpEnemy;
-
-	//Enemyがいるかどうか
-	bool mEnemyActive;
 
 	//弾の管理者のポインタ
 	BulletManager* mpBulletManager;
@@ -50,7 +51,8 @@ public:
 		, EffectManager* pEffectManager
 		, EnemyManager* pEnemyManager
 		, Player* pPlayer
-		, ItemManager* pItemManager);
+		, ItemManager* pItemManager
+		, Tutorial* pTutorial);
 
 	//更新
 	void Update();
@@ -65,14 +67,15 @@ public:
 	void CheckHitEnemy();
 
 	//Enemyがいるかどうか
-	const bool& GetEnemyActive() { return mEnemyActive; }
+	const bool GetEnemyActive();
 
 	//一番近いEnemyの座標
-	const DirectX::SimpleMath::Vector3& ClosestPos(
-		const DirectX::SimpleMath::Vector3& pos);
+	const DirectX::SimpleMath::Vector3 ClosestPos(
+		const DirectX::SimpleMath::Vector3& pos
+		, const ENEMY_TYPE& type = ENEMY_TYPE::NONE);
 
 	//一番近いEnemyの種類
-	const ENEMY_TYPE& ClosestPosEnemyType(
+	const ENEMY_TYPE ClosestPosEnemyType(
 		const DirectX::SimpleMath::Vector3& pos);
 
 	//Enemyのスポーン
@@ -80,4 +83,10 @@ public:
 		const int& startnum
 		, const ENEMY_TYPE& type
 		, const ENEMY_LEVEL& level);
+
+	//敵の残りの数
+	const int GetNumber_of_remaining_Enemy() { return mNumber_of_remaining_Enemy; }
+
+	//敵の数を減らす
+	void SetNumber_of_remaining_Enemy() { mNumber_of_remaining_Enemy--; }
 };

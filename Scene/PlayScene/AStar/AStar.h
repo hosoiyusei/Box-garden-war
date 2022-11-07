@@ -45,16 +45,16 @@ public:
 	//初期化
 	void Initialize(StageRead* pStageRead);
 
-	const float& Move();
+	const float Move();
 
 	//A*実行
-	const DirectX::SimpleMath::Vector3& _tmain(const int& startnum);
+	const DirectX::SimpleMath::Vector3 _tmain(const int& startnum);
 
 	//座標の取得
-	const Int2& GetPos() { return mPos; }
+	const Int2 GetPos() { return mPos; }
 
 	//ゴールについたかの確認
-	const bool& CheckGoal();
+	const bool CheckGoal();
 
 private:
 
@@ -62,7 +62,7 @@ private:
 	void SetStart(const int& startnum);
 	
 	// マンハッタン距離を斜め移動ありを考慮して求める
-	const int& GetDistance(
+	const int GetDistance(
 		const int& from_x
 		, const int& from_y
 		, const int& to_x
@@ -78,12 +78,12 @@ private:
 		, const int& ncost);
 
 	// 指定した地点からスタート地点までの距離を求める
-	const int& BackTrace(
+	const int BackTrace(
 		const int& x
 		, const int& y);
 
 	// A*で経路探査する
-	const int& Search(const int& count);
+	const int Search(const int& count);
 
 	// 最短ルートをマップデータに書き出す
 	void TraceRoute(const int& x, const int& y);

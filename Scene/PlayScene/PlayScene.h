@@ -14,6 +14,7 @@ class EffectManager;
 class CollisionManager;
 class GameUI;
 class ItemManager;
+class Tutorial;
 
 class PlayScene:public IScene
 {
@@ -38,6 +39,15 @@ private:
 
 	float mResultEffect;
 
+	//フェードの大きさ
+	float mFadeScale;
+
+	//フェードの調整
+	float mFade_adjustment;
+
+	//フェードのサイズ調整
+	float mFadeSize_adjustment;
+
 	//ステージデータのポインタ
 	std::unique_ptr<StageRead> mpStageRead;
 	//ステージを描画するポインタ
@@ -55,10 +65,14 @@ private:
 	//当たり判定の管理者のポインタ
 	std::unique_ptr<CollisionManager> mpCollisionManager;
 
+	//ゲームのUI
 	std::unique_ptr<GameUI> mpGameUI;
 
 	//アイテムの管理者のポインタ
 	std::unique_ptr<ItemManager> mpItemManager;
+
+	//チュートリアル
+	std::unique_ptr<Tutorial> mpTutorial;
 
 public:
 

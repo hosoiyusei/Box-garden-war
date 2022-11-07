@@ -91,6 +91,14 @@ void Game::Render()
 
     Clear();
 
+    // ビューポートの矩形領域の設定（ゲーム画面）
+    D3D11_VIEWPORT viewport = CD3D11_VIEWPORT(
+        0.0f,
+        0.0f,
+        1600.0f,
+        900.0f
+    );
+
     DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
     pDR->PIXBeginEvent(L"Render");
@@ -99,33 +107,24 @@ void Game::Render()
     // TODO: Add your rendering code here.
     context;
 
-    pDR->PIXEndEvent();
+    
     // 追加した
     mScene->Render();
     if (mScene->GetScene() == GAME_SCENE::PLAY)
     {
-        // ビューポートの矩形領域の設定（ゲーム画面）
-        D3D11_VIEWPORT viewport = CD3D11_VIEWPORT(
-            0.0f,
-            0.0f,
-            1600.0f,
-            900.0f
-        );
+        
 
         context->RSSetViewports(1, &viewport);
     }
     mScene->Render2();
 
-    
-
-    
-
     // ビューポートを変更する（画面全体）
-    auto viewport = pDR->GetScreenViewport();
+   viewport = pDR->GetScreenViewport();
     context->RSSetViewports(1, &viewport);
 
     mScene->Forward();
 
+    pDR->PIXEndEvent();
     // Show the new frame.
     pDR->Present();
 }

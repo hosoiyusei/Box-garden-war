@@ -1,5 +1,6 @@
 #include"pch.h"
 #include"Shoot.h"
+#include"../../EffectManager/EffectManager.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -8,6 +9,8 @@ using namespace DirectX::SimpleMath;
 Shoot::Shoot()
 	:mOffensivePower(0)
 	, mAngle(0.0f)
+	,mColor()
+	,mPos()
 {
 
 }
@@ -24,6 +27,13 @@ void Shoot::Shot(const int& power, const float& angle, const DirectX::SimpleMath
 	mAngle = angle;
 	mOffensivePower = power;
 	mLevel = level;
+	mColor = color;
+}
+
+//’e‚ÌXV
+void Shoot::Update(EffectManager* pEffectManager)
+{
+	UNREFERENCED_PARAMETER(pEffectManager);
 }
 
 //•`‰æ
@@ -34,8 +44,10 @@ void Shoot::Draw(const Vector3& pos)
 	//ƒ[ƒ‹ƒh‚Ì‰Šú‰»
 	Matrix world = Matrix::Identity;
 
-	world = Matrix::CreateScale(0.08f);
-	world *= Matrix::CreateRotationY(-mAngle-1.56f);
+	mPos = pos;
+
+	world = Matrix::CreateScale(0.2f, 0.2f, 0.08f);
+	world *= Matrix::CreateRotationY(-mAngle - 1.56f);
 	world *= Matrix::CreateTranslation(pos);
 	pObject.GetModel()->Draw(world, MODEL_NAME::ARROW);
 }

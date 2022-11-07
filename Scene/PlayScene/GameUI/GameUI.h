@@ -1,11 +1,17 @@
 #pragma once
+#include"SummonUnitUI.h"
 
 //前方宣言
 class Player;
 class ArrowUI;
-class SummonUnitUI;
+class Tutorial;
+
 class Reinforcement;
 class StageInformation;
+class EnemyManager;
+class UnitManager;
+class Button;
+class PlaySetting;
 
 class GameUI
 {
@@ -26,6 +32,16 @@ private:
 	//ステージの情報のUI
 	std::unique_ptr<StageInformation> mpStageInformation;
 
+	std::unique_ptr<PlaySetting> mpPlaySetting;
+
+	EnemyManager* mpEnemyManager;
+
+	std::map<std::string, std::unique_ptr<Button>> mpButtons;
+
+	bool mBackSelectFlag;
+
+	bool mSettingFlag;
+
 public:
 
 	//コンストラクタ
@@ -34,10 +50,16 @@ public:
 	~GameUI();
 
 	//初期化
-	void Initialize(Player* pPlayer);
+	void Initialize(EnemyManager* pEnemyManager, Player* pPlayer, UnitManager* pUnitManager, Tutorial* pTutorial);
+
+	void Update();
 
 	//描画
 	void Draw();
+
+	Button* Summon_Unit_Button(const UNIT_TYPE& type);
+
+	const bool BackSelectScene();
 
 private:
 

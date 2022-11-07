@@ -23,19 +23,19 @@ public:
 	~Magic();
 
 	//弾が有効な距離
-	const float& GetLen() override { return 8.0f; }
+	const float GetLen() override { return 8.0f; }
 
 	//スピードの設定
-	const float& GetSpeed()override { return 0.1f; }
+	const float GetSpeed()override { return 0.1f; }
 
 	//攻撃力
-	const int& GetOffensivePower()override { return mOffensivePower; }
+	const int GetOffensivePower()override { return mOffensivePower; }
 
 	//発射
 	void Shot(const int& power, const float& angle, const DirectX::SimpleMath::Color& color, const UNIT_LEVEL& level)override;
 
 	//弾の種類を返す
-	const BULLET_TYPE& GetType()override { return BULLET_TYPE::MAGIC; }
+	const BULLET_TYPE GetType()override { return BULLET_TYPE::MAGIC; }
 
 	//弾の更新
 	void Update(EffectManager* pEffectManager)override;

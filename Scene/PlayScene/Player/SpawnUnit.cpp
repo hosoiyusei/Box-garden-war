@@ -4,16 +4,19 @@
 #include"../UnitManager/UnitManager.h"
 #include"Player.h"
 #include"../UnitManager/Unit/UnitLevel.h"
+#include"../GameUI/GameUI.h"
+
+#include"../../TitleScene/Button/Button.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 //Spawnさせるときの金
-const int SWORDFIGHTER_COST(-10);
-const int ARCHER_COST(-20);
-const int GUNNER_COST(-30);
-const int CANNON_COST(-40);
-const int SHOGUN_COST(-50);
+const int SWORDFIGHTER_COST(10);
+const int ARCHER_COST(20);
+const int GUNNER_COST(30);
+const int CANNON_COST(40);
+const int SHOGUN_COST(50);
 
 //レベル上げるときの金
 const int LEVEL_UP_COST_2(10);
@@ -34,9 +37,8 @@ SpawnUnit::SpawnUnit()
 	, mpPlayer(nullptr)
 	, mUnitSelectFlag(false)
 	, mUnitReinforcementFlag(false)
-	, mInputMousePosX(0)
-	, mInputMousePosY(0)
 	, mSpawnFlag(false)
+	, mpGameUI(nullptr)
 {
 
 }
@@ -48,17 +50,17 @@ SpawnUnit::~SpawnUnit()
 }
 
 //初期化
-void SpawnUnit::Initialize(UnitManager* pUnitManager, Player* pPlayer)
+void SpawnUnit::Initialize(UnitManager* pUnitManager, Player* pPlayer, GameUI* pGameUI)
 {
 	//ポインタを取得
 	mpUnitManager = pUnitManager;
 	mpPlayer = pPlayer;
+	mpGameUI = pGameUI;
 }
 
 //Unitの呼び出し
-const bool& SpawnUnit::Spawn(const float& stageTilePosX	, const float& stageTilePosY)
+const bool SpawnUnit::Spawn(const float& stageTilePosX	, const float& stageTilePosY)
 {
-	InputManager& inputManager = InputManager::GetInstance();
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
 	//ステージデータの取得
@@ -71,7 +73,8 @@ const bool& SpawnUnit::Spawn(const float& stageTilePosX	, const float& stageTile
 	{
 		SpawnUnitSelect(pos);
 
-		mSpawnFlag = false;
+		//if (inputManager.GetMouseState().x < 1300)
+			//mSpawnFlag = false;
 	}
 	//Unitの強化
 	else if (mUnitReinforcementFlag == true)
@@ -83,10 +86,6 @@ const bool& SpawnUnit::Spawn(const float& stageTilePosX	, const float& stageTile
 	//Unitを呼び出せるようにする
 	else if (tiledata.tileData == TILE_DATA::Unit_Scaffolding)
 	{
-		//押した瞬間のマウスの座標
-		mInputMousePosX = inputManager.GetMouseState().x;
-		mInputMousePosY = inputManager.GetMouseState().y;
-
 		mUnitSelectFlag = true;
 		mSpawnFlag = true;
 	}
@@ -100,10 +99,6 @@ const bool& SpawnUnit::Spawn(const float& stageTilePosX	, const float& stageTile
 		tiledata.tileData != TILE_DATA::Wall
 		)
 	{
-		//押した瞬間のマウスの座標
-		mInputMousePosX = inputManager.GetMouseState().x;
-		mInputMousePosY = inputManager.GetMouseState().y;
-
 		mUnitReinforcementFlag = true;
 		mSpawnFlag = true;
 
@@ -121,84 +116,50 @@ void SpawnUnit::SpawnUnitSelect(const Vector3& pos)
 	InputManager& inputManager = InputManager::GetInstance();
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
-	int mouseX = inputManager.GetMouseState().x;
-	int mouseY = inputManager.GetMouseState().y;
-
-	int posx = static_cast<int>(pos.x);
-	int posy = static_cast<int>(pos.z);
+	const int posx = static_cast<int>(pos.x);
+	const int posy = static_cast<int>(pos.z);
 
 	//ステージデータの取得
 	STAGE_DATA tiledata = mpPlayer->GetStageData(posx, posy);
 
 	if (mUnitSelectFlag == true)
-	{//1400,100,1500,200
-		if (1400 <= mouseX && 100 <= mouseY && 1500 >= mouseX && 200 >= mouseY &&
-			mpPlayer->GetMoney()+ SWORDFIGHTER_COST >= 0)
+	{
+		if (mpPlayer->GetMoney() >= SWORDFIGHTER_COST&&
+			mpGameUI->Summon_Unit_Button(UNIT_TYPE::SWORDFIGHTER)->When_the_mouse_cursor_enters_the_range() == true)
 		{
-			//Unitのスポーンとステージデータの書き換え
-			mpPlayer->SetTileNum(posx, posy
-				, mpUnitManager->Spawn(pos, UNIT_TYPE::SWORDFIGHTER)
-				, UNIT_LEVEL::LEVEL_1);//剣士を出す
-
-			UnitCost(UNIT_TYPE::SWORDFIGHTER);
-
-			soundmanager.SE_Run(SOUND_SE::SE_BUTTON1, SE_RUN::PLAY);
+			Unit_Spawn_Type(UNIT_TYPE::SWORDFIGHTER, pos);
 		}
-		else if (1400 <= mouseX && 210 <= mouseY && 1500 >= mouseX && 310 >= mouseY &&
-			mpPlayer->GetMoney()+ ARCHER_COST >= 0)
+		else if (mpPlayer->GetMoney() >= ARCHER_COST &&
+			mpGameUI->Summon_Unit_Button(UNIT_TYPE::ARCHER)->When_the_mouse_cursor_enters_the_range() == true)
 		{
-			//Unitのスポーンとステージデータの書き換え
-			mpPlayer->SetTileNum(posx, posy
-				, mpUnitManager->Spawn(pos, UNIT_TYPE::ARCHER)
-				, UNIT_LEVEL::LEVEL_1);//弓兵を出す
-
-			UnitCost(UNIT_TYPE::ARCHER);
-
-			soundmanager.SE_Run(SOUND_SE::SE_BUTTON1, SE_RUN::PLAY);
+			Unit_Spawn_Type(UNIT_TYPE::ARCHER, pos);
 		}
-		else if (1400 <= mouseX && 320 <= mouseY && 1500 >= mouseX && 420 >= mouseY &&
-			mpPlayer->GetMoney()+ GUNNER_COST >= 0)
+		else if (mpPlayer->GetMoney() >= GUNNER_COST  &&
+			mpGameUI->Summon_Unit_Button(UNIT_TYPE::GUNNER)->When_the_mouse_cursor_enters_the_range() == true)
 		{
-			//Unitのスポーンとステージデータの書き換え
-			mpPlayer->SetTileNum(posx, posy
-				, mpUnitManager->Spawn(pos, UNIT_TYPE::GUNNER)
-				, UNIT_LEVEL::LEVEL_1);//鉄砲を出す
-
-			UnitCost(UNIT_TYPE::GUNNER);
-
-			soundmanager.SE_Run(SOUND_SE::SE_BUTTON1, SE_RUN::PLAY);
+			Unit_Spawn_Type(UNIT_TYPE::GUNNER, pos);
 		}
-		else if (1400 <= mouseX && 430 <= mouseY &&1500 >= mouseX && 530 >= mouseY &&
-			mpPlayer->GetMoney()+ CANNON_COST >= 0)
+		else if (mpPlayer->GetMoney() >= CANNON_COST  &&
+			mpGameUI->Summon_Unit_Button(UNIT_TYPE::CANNON)->When_the_mouse_cursor_enters_the_range() == true)
 		{
-			//Unitのスポーンとステージデータの書き換え
-			mpPlayer->SetTileNum(posx, posy
-				, mpUnitManager->Spawn(pos, UNIT_TYPE::CANNON)
-				, UNIT_LEVEL::LEVEL_1);//大砲を出す
-
-			UnitCost(UNIT_TYPE::CANNON);
-
-			soundmanager.SE_Run(SOUND_SE::SE_BUTTON1, SE_RUN::PLAY);
+			Unit_Spawn_Type(UNIT_TYPE::CANNON, pos);
 		}
-		else if (1400 <= mouseX && 540 <= mouseY && 1500 >= mouseX && 640 >= mouseY &&
-			mpPlayer->GetMoney()+ SHOGUN_COST >= 0)
+		else if (mpPlayer->GetMoney() >= SHOGUN_COST  &&
+			mpGameUI->Summon_Unit_Button(UNIT_TYPE::SHOGUN)->When_the_mouse_cursor_enters_the_range() == true)
 		{
-			//Unitのスポーンとステージデータの書き換え
-			mpPlayer->SetTileNum(posx, posy
-				, mpUnitManager->Spawn(pos, UNIT_TYPE::SHOGUN)
-				, UNIT_LEVEL::LEVEL_1);//大砲を出す
-
-			UnitCost(UNIT_TYPE::SHOGUN);
-
-			soundmanager.SE_Run(SOUND_SE::SE_BUTTON1, SE_RUN::PLAY);
+			Unit_Spawn_Type(UNIT_TYPE::SHOGUN, pos);
 		}
-		else
+		else if (mpPlayer->Stage_Target_Duplicate() == true)
 		{
+			When_the_targets_overlap(pos);
+		}
+		else if (inputManager.GetMouseState().x < 1300)
+		{
+			mUnitSelectFlag = false;
+			mSpawnFlag = false;
 			soundmanager.SE_Run(SOUND_SE::SE_BUTTON2, SE_RUN::PLAY);
 		}
 	}
-
-	mUnitSelectFlag = false;
 }
 
 //Unitの強化
@@ -209,16 +170,23 @@ void SpawnUnit::UnitReinforcement(const Vector3& pos)
 
 	if (mUnitReinforcementFlag == true)
 	{
-		if (//1400+100,100+100,1500+100,200+100 
+		if (
 			1400 <= inputManager.GetMouseState().x &&
 			1500 >= inputManager.GetMouseState().x &&
 			100 <= inputManager.GetMouseState().y &&
-			200 >= inputManager.GetMouseState().y &&
-			mpUnitManager->GetReinforcementFlag(pos) == false
-			)
+			200 >= inputManager.GetMouseState().y || 
+			mpPlayer->Stage_Target_Duplicate() == true)
 		{
 			//Unitの強化
-			Reinforcement(mpPlayer->GetStageData(static_cast<int>(pos.x), static_cast<int>(pos.z)).tileData, pos);
+			if (mpUnitManager->GetReinforcementFlag(pos) == false)
+				Reinforcement(mpPlayer->GetStageData(static_cast<int>(pos.x), static_cast<int>(pos.z)).tileData, pos);
+		}
+		else if (1400 <= inputManager.GetMouseState().x &&
+			1500 >= inputManager.GetMouseState().x &&
+			300 <= inputManager.GetMouseState().y &&
+			400 >= inputManager.GetMouseState().y)
+		{
+			DeleteUnit();//ユニットの削除
 		}
 		else
 		{
@@ -313,17 +281,17 @@ void SpawnUnit::UnitCost(const UNIT_TYPE& type)
 {
 	switch (type)
 	{
-		case UNIT_TYPE::SWORDFIGHTER:	{mpPlayer->SetMoney(SWORDFIGHTER_COST); break; }
-		case UNIT_TYPE::ARCHER:			{mpPlayer->SetMoney(ARCHER_COST); break; }
-		case UNIT_TYPE::GUNNER:			{mpPlayer->SetMoney(GUNNER_COST); break; }
-		case UNIT_TYPE::CANNON:			{mpPlayer->SetMoney(CANNON_COST); break; }
-		case UNIT_TYPE::SHOGUN:			{mpPlayer->SetMoney(SHOGUN_COST); break; }
+		case UNIT_TYPE::SWORDFIGHTER:	{mpPlayer->SetMoney(-SWORDFIGHTER_COST); break; }
+		case UNIT_TYPE::ARCHER:			{mpPlayer->SetMoney(-ARCHER_COST); break; }
+		case UNIT_TYPE::GUNNER:			{mpPlayer->SetMoney(-GUNNER_COST); break; }
+		case UNIT_TYPE::CANNON:			{mpPlayer->SetMoney(-CANNON_COST); break; }
+		case UNIT_TYPE::SHOGUN:			{mpPlayer->SetMoney(-SHOGUN_COST); break; }
 		default:break;
 	}
 }
 
 //Unitの強化のコスト
-const bool& SpawnUnit::UnitReinforcementCost(const TILE_DATA& type, const int& money)
+const bool SpawnUnit::UnitReinforcementCost(const TILE_DATA& type, const int& money)
 {
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
@@ -388,4 +356,72 @@ const bool& SpawnUnit::UnitReinforcementCost(const TILE_DATA& type, const int& m
 	}
 
 	return false;
+}
+
+void SpawnUnit::Unit_Spawn_Type(
+	const UNIT_TYPE& type
+	, const Vector3& pos)
+{
+	SoundManager& soundmanager = SoundManager::GetInstance();
+
+	const int posx = static_cast<int>(pos.x);
+	const int posy = static_cast<int>(pos.z);
+
+	//Unitのスポーンとステージデータの書き換え
+	mpPlayer->SetTileNum(posx, posy
+		, mpUnitManager->Spawn(pos, type)
+		, UNIT_LEVEL::LEVEL_1);//剣士を出す
+
+	UnitCost(type);
+	mUnitSelectFlag = false;
+	mSpawnFlag = false;
+	soundmanager.SE_Run(SOUND_SE::SE_BUTTON1, SE_RUN::PLAY);
+}
+
+void SpawnUnit::When_the_targets_overlap(const Vector3& pos)
+{
+	InputManager& inputManager = InputManager::GetInstance();
+
+	if (inputManager.GetButtonStateTracker()->leftButton == inputManager.GetButtonStateTracker()->PRESSED)
+	{
+		if (inputManager.GetMouseState().scrollWheelValue == 0 &&
+			mpPlayer->GetMoney() >= SWORDFIGHTER_COST)
+		{
+			Unit_Spawn_Type(UNIT_TYPE::SWORDFIGHTER, pos);
+		}
+		else if (inputManager.GetMouseState().scrollWheelValue == -120 &&
+			mpPlayer->GetMoney() >= ARCHER_COST ||
+			inputManager.GetMouseState().scrollWheelValue == 480 &&
+			mpPlayer->GetMoney() >= ARCHER_COST)
+		{
+			Unit_Spawn_Type(UNIT_TYPE::ARCHER, pos);
+		}
+		else if (inputManager.GetMouseState().scrollWheelValue == -240 &&
+			mpPlayer->GetMoney() >= GUNNER_COST ||
+			inputManager.GetMouseState().scrollWheelValue == 360 &&
+			mpPlayer->GetMoney() >= GUNNER_COST)
+		{
+			Unit_Spawn_Type(UNIT_TYPE::GUNNER, pos);
+		}
+		else if (inputManager.GetMouseState().scrollWheelValue == -360 &&
+			mpPlayer->GetMoney() >= CANNON_COST||
+			inputManager.GetMouseState().scrollWheelValue == 240 &&
+			mpPlayer->GetMoney() >= CANNON_COST)
+		{
+			Unit_Spawn_Type(UNIT_TYPE::CANNON, pos);
+		}
+		else if (inputManager.GetMouseState().scrollWheelValue == -480 &&
+			mpPlayer->GetMoney() >= SHOGUN_COST ||
+			inputManager.GetMouseState().scrollWheelValue == 120 &&
+			mpPlayer->GetMoney() >= SHOGUN_COST)
+		{
+			Unit_Spawn_Type(UNIT_TYPE::SHOGUN, pos);
+		}
+	}
+}
+
+//ユニットの削除
+void SpawnUnit::DeleteUnit()
+{
+	mpUnitManager->Delete(mpPlayer->GetPlayerPos());
 }

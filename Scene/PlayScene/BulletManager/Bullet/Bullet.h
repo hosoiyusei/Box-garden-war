@@ -59,17 +59,17 @@ public:
 		, DirectX::SimpleMath::Color color = DirectX::SimpleMath::Color(0.0f, 0.0f, 0.0f));
 
 	//弾が当たったとき
-	const int& Hit();
+	const int Hit();
 
 	//アクティブフラグの取得
-	const bool& GetActive() { return mActive; }
+	const bool GetActive() { return mActive; }
 
 	//当たり判定を取得
-	const SphereCollision& GetCollision() { return mCollision; }
+	const SphereCollision GetCollision() { return mCollision; }
 
-	const BULLET_TYPE& GetBulletType() { return mType; }
+	const BULLET_TYPE GetBulletType() { return mType; }
 
-	const UNIT_LEVEL& GetLevel();
+	const UNIT_LEVEL GetLevel();
 
 private:
 

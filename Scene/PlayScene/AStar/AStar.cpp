@@ -66,7 +66,7 @@ void AStar::Initialize(StageRead* pStageRead)
 }
 
 //Enemyの座標
-const float& AStar::Move()
+const float AStar::Move()
 {
 	//左を向く
 	if (mPos.mX - 1 >= 0)
@@ -137,7 +137,7 @@ const float& AStar::Move()
 }
 
 //A*の実行
-const DirectX::SimpleMath::Vector3& AStar::_tmain(const int& startnum)
+const DirectX::SimpleMath::Vector3 AStar::_tmain(const int& startnum)
 {
 	for (int i = 0; i < mVertical; i++)
 	{
@@ -171,7 +171,7 @@ const DirectX::SimpleMath::Vector3& AStar::_tmain(const int& startnum)
 }
 
 //ゴールにたどり着いたかどうか
-const bool& AStar::CheckGoal()
+const bool AStar::CheckGoal()
 {
 	if (mPos.mX == mGoal.mX&&
 		mPos.mY==mGoal.mY)
@@ -185,7 +185,7 @@ const bool& AStar::CheckGoal()
 /*******************************************************************************/
 
 // マンハッタン距離を斜め移動ありを考慮して求める
-const int& AStar::GetDistance(
+const int AStar::GetDistance(
 	const int& from_x
 	, const int& from_y
 	, const int& to_x
@@ -225,7 +225,7 @@ const anode* AStar::SetNode(
 }
 
 // 指定した地点からスタート地点までの距離を求める
-const int& AStar::BackTrace(
+const int AStar::BackTrace(
 	const int& x
 	, const  int& y)
 {
@@ -242,7 +242,7 @@ const int& AStar::BackTrace(
 }
 
 // A*で経路探査する
-const int& AStar::Search(const int& count)
+const int AStar::Search(const int& count)
 {
 	// openリストが空なら終了
 	if (mapOpen.empty()) return -9;

@@ -5,14 +5,16 @@ class DoubleSpeed : public Singleton<DoubleSpeed>
 {
 private:
 
+	//”{‘¬‚Ì‘¬“x
 	float mSpeed;
 
+	//ˆêŽž’âŽ~
 	bool mExecutionFlag;
 
 public:
 
 	DoubleSpeed();
-	~DoubleSpeed();
+	~DoubleSpeed() = default;
 
 	const float& GetSpeed() { return mSpeed; }
 

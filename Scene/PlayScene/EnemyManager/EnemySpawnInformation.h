@@ -2,6 +2,8 @@
 
 //前方宣言
 class EnemyManager;
+class Player;
+class Tutorial;
 
 class EnemySpawnInformation
 {
@@ -19,15 +21,27 @@ private:
 	//クリアフラグ
 	bool mClear;
 
+	Player* mpPlayer;
+
+	Tutorial* mpTutorial;
+
 public:
 
 	//コンストラクタ
 	EnemySpawnInformation();
 	//デストラクタ
-	~EnemySpawnInformation();
+	~EnemySpawnInformation() = default;
+
+	//初期化
+	void Initialize(Player* pPlayer, Tutorial* pTutorial);
 
 	//Enemyをスポーン
 	void Spawn(EnemyManager* pEnemyManager);
 
-	const bool& GetClear() { return mClear; }
+	const bool GetClear() { return mClear; }
+
+private:
+
+	//チュートリアル用のスポーン
+	void Spawn_for_tutorial(EnemyManager* pEnemyManager);
 };

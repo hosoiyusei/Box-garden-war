@@ -4,6 +4,7 @@
 #include"../Player/Player.h"
 
 #include"../Player/StageTileData.h"
+#include"../../TitleScene/Button/Button.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -21,9 +22,13 @@ const int LEVEL_UP_COST_GUNNER(30);
 const int LEVEL_UP_COST_CANNON(40);
 const int LEVEL_UP_COST_SHOGUN(50);
 
+const std::string POWER("power");
+const std::string DELETE_UNIT("delete");
+
 Reinforcement::Reinforcement()
 	:mLevel(UNIT_LEVEL::NONE)
 	, mWindowPosX(1600)
+	,mType(TILE_DATA::NONE)
 {
 
 }
@@ -33,7 +38,16 @@ Reinforcement::~Reinforcement()
 
 }
 
-void Reinforcement::Draw(Player* mpPlayer)
+void Reinforcement::Initialize()
+{
+	mpButtons[POWER] = std::make_unique<Button>();
+	mpButtons[DELETE_UNIT] = std::make_unique<Button>();
+
+	mpButtons[POWER]->SetRECT(mWindowPosX, 100, mWindowPosX + 100, 200);
+	mpButtons[DELETE_UNIT]->SetRECT(mWindowPosX, 300, mWindowPosX + 100, 400);
+}
+
+void Reinforcement::Update(Player* mpPlayer)
 {
 	//強化するときのUI
 	if (mpPlayer->GetReinforcementFlag() == false)
@@ -44,7 +58,16 @@ void Reinforcement::Draw(Player* mpPlayer)
 	else if (mpPlayer->GetReinforcementFlag() == true)
 	{
 		mWindowPosX -= (mWindowPosX - 1400) / 2;
+	}
 
+	mpButtons[POWER]->SetRECT(mWindowPosX, 100, mWindowPosX + 100, 200);
+	mpButtons[DELETE_UNIT]->SetRECT(mWindowPosX, 300, mWindowPosX + 100, 400);
+}
+
+void Reinforcement::Draw(Player* mpPlayer)
+{
+	if (mpPlayer->GetReinforcementFlag() == true)
+	{
 		DrawManager& pObject = DrawManager::GetInstance();
 
 		//ステージの情報
@@ -53,18 +76,32 @@ void Reinforcement::Draw(Player* mpPlayer)
 		RECT rect1;
 		RECT rect2;
 
-		rect1 = { 500,520 };
-		rect2 = { mWindowPosX,100,mWindowPosX + 100,200 };
+		rect1 = { 500,510 };
 		//パワーアップのウィンドウの描画
-		pObject.GetTexture2D()->Draw(TEXTURE2D::WINDOW, rect1, rect2);
+		mpButtons[POWER]->DrawButton(rect1, TEXTURE2D::WINDOW, L"", XMFLOAT2(), Colors::White, 1.0f, Colors::Gray, Colors::Aqua);
+
+		//削除ウィンドウの描画
+		mpButtons[DELETE_UNIT]->DrawButton(rect1, TEXTURE2D::WINDOW, L"", XMFLOAT2(), Colors::White, 1.0f, Colors::Gray, Colors::Aqua);
 
 		rect1 = { 750,730,0,0 };
 		rect2 = { mWindowPosX+100,200,mWindowPosX+200,300 };
 		//パワーアップのUIの描画
 		pObject.GetTexture2D()->Draw(TEXTURE2D::POWERUP, rect1, rect2, Colors::White, 3.14f);
 
+		rect1 = { 225,225 };
+		rect2 = { mWindowPosX + 100,400,mWindowPosX + 200,500 };
+		//ゴミ箱
+		pObject.GetTexture2D()->Draw(TEXTURE2D::GARBAGECAN, rect1, rect2, Colors::White, 3.14f);
+
 		pObject.GetText()->TextDraw(L"必要金額：", XMFLOAT2(1360, 200), Colors::White, 0.0f, 0.7f);
 		pObject.GetText()->DrawInt(RequestedAmount(stagedata), XMFLOAT2(1510, 200), Colors::White, 0.0f, 0.7f);
+
+		pObject.GetText()->TextDraw(
+			L"削除"
+			, XMFLOAT2(static_cast<float>(mWindowPosX + 10), static_cast <float>(400))
+			, Colors::White
+			, 0.0f
+			, 0.7f);
 	}
 }
 

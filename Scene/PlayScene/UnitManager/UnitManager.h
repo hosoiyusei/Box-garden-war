@@ -10,6 +10,7 @@ class Unit;
 class EnemyManager;
 class BulletManager;
 class EffectManager;
+class Player;
 
 class UnitManager
 {
@@ -17,6 +18,8 @@ private:
 
 	//ユニットの配列
 	std::vector<std::unique_ptr<Unit>> mpUnit;
+
+	Player* mpPlayer;
 
 public:
 
@@ -29,7 +32,8 @@ public:
 	void Initialize(
 		EnemyManager* pEnemyManager
 		, BulletManager* pBulletManager
-	, EffectManager* pEffectManager);
+		, EffectManager* pEffectManager
+		, Player* mpPlayer);
 
 	//更新
 	void Update();
@@ -50,17 +54,23 @@ public:
 		const DirectX::SimpleMath::Vector3& pos
 		,const UNIT_LEVEL& level);
 
+	//強化中のフラグを返す
+	const bool GetReinforcementFlag(const DirectX::SimpleMath::Vector3& pos);
+
 	//ユニットの削除
 	void Delete(const DirectX::SimpleMath::Vector3& pos);
 
-	//強化中のフラグを返す
-	const bool& GetReinforcementFlag(const DirectX::SimpleMath::Vector3& pos);
-
-private:
+	//攻撃力
+	const int GetPower(const DirectX::SimpleMath::Vector3& pos);
 
 	//Unitのパワーアップ
 	void UnitPowerUp(Unit* pUnit);
 
+	//パワーアップの解除
+	void Release_power_ups();
+
+private:
+
 	//Unitの種類からtileデータを返す
-	const TILE_DATA& UnitTypeData(const UNIT_TYPE& unitType);
+	const TILE_DATA UnitTypeData(const UNIT_TYPE& unitType);
 };

@@ -1,7 +1,7 @@
 #include"pch.h"
 #include"Collision.h"
 
-const bool& SphereCollision::CheckHit(const SphereCollision& Collision)
+const bool SphereCollision::CheckHit(const SphereCollision& Collision)
 {
 	//2点の位置を原点からベクトルにする
 	float x = Collision.mPos.x - mPos.x;

@@ -5,6 +5,7 @@
 //前方宣言
 class UnitManager;
 class Player;
+class GameUI;
 
 class SpawnUnit
 {
@@ -18,8 +19,7 @@ private:
 		, mUnitReinforcementFlag	//Unitの強化フラグ
 		, mSpawnFlag;				//Unitの呼び出しフラグ
 
-	//マウスの入力時の座標
-	int   mInputMousePosX, mInputMousePosY;
+	GameUI* mpGameUI;
 
 public:
 
@@ -29,22 +29,16 @@ public:
 	~SpawnUnit();
 
 	//初期化
-	void Initialize(UnitManager* pUnitManager, Player* pPlayer);
+	void Initialize(UnitManager* pUnitManager, Player* pPlayer,GameUI* pGameUI);
 
 	//Unitを呼び出す
-	const bool& Spawn(const float& stageTilePosX, const float& stageTilePosY);
+	const bool Spawn(const float& stageTilePosX, const float& stageTilePosY);
 
 	//Unitの選択フラグを返す
-	const bool& GetUnitSelectFlag() { return mUnitSelectFlag; }
+	const bool GetUnitSelectFlag() { return mUnitSelectFlag; }
 
 	//Unitの強化フラグを返す
-	const bool& GetReinforcementFlag(){ return mUnitReinforcementFlag; }
-
-	//マウスのX座標を返す
-	const int& GetInputMousePosX(){ return mInputMousePosX; }
-
-	//マウスのY座標を返す
-	const int& GetInputMousePosY() { return mInputMousePosY; }
+	const bool GetReinforcementFlag(){ return mUnitReinforcementFlag; }
 
 private:
 
@@ -64,5 +58,16 @@ private:
 	void UnitCost(const UNIT_TYPE& type);
 
 	//Unitの強化のコスト
-	const bool& UnitReinforcementCost(const TILE_DATA& type, const int& money);
+	const bool UnitReinforcementCost(const TILE_DATA& type, const int& money);
+
+	//SpawnするUnitの種類
+	void Unit_Spawn_Type(
+		const UNIT_TYPE& type
+		, const DirectX::SimpleMath::Vector3& pos);
+
+	//UnitのSpawn
+	void When_the_targets_overlap(const DirectX::SimpleMath::Vector3& pos);
+
+	//ユニットの削除
+	void DeleteUnit();
 };

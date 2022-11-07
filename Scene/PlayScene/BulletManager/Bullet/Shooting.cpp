@@ -20,6 +20,8 @@ Shooting::~Shooting()
 //”­ŽË
 void Shooting::Shot(const int& power, const float& angle, const DirectX::SimpleMath::Color& color, const UNIT_LEVEL& level)
 {
+	UNREFERENCED_PARAMETER(color);
+	UNREFERENCED_PARAMETER(angle);
 	mOffensivePower = power;
 	mLevel = level;
 }

@@ -60,5 +60,5 @@ public:
 		const DirectX::SimpleMath::Vector3& vel);
 
 	//Activeƒtƒ‰ƒO‚ð•Ô‚·
-	const bool& GetActive() { return mActive; }
+	const bool GetActive() { return mActive; }
 };

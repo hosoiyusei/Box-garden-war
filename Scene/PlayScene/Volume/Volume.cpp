@@ -2,8 +2,8 @@
 #include"Volume.h"
 
 Volume::Volume()
-	:mSeVolume(10.0f)
-	,mBgmVolume(10.0f)
+	:mSeVolume(6.0f)
+	,mBgmVolume(6.0f)
 {
 
 }

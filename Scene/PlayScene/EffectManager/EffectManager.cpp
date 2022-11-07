@@ -4,7 +4,7 @@
 #include"Effect/Effect.h"
 
 //Effectの数
-const int  EFFECT_NUM(300);
+const int  EFFECT_NUM(800);
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -24,7 +24,7 @@ EffectManager::~EffectManager()
 //初期化
 void EffectManager::Initialize()
 {
-	for (int i = 0; i < EFFECT_NUM; i++)
+	for (size_t i = 0; i < EFFECT_NUM; i++)
 	{
 		mpEffect.push_back(std::make_unique<Effect>());
 		mpEffect[i]->Initialize();
@@ -34,7 +34,7 @@ void EffectManager::Initialize()
 //更新
 void EffectManager::Update()
 {
-	for (int i = 0; i < mpEffect.size(); i++)
+	for (size_t i = 0; i < mpEffect.size(); i++)
 	{
 		//アクティブだったら更新
 		if (mpEffect[i]->GetActive() == true)
@@ -47,7 +47,7 @@ void EffectManager::Update()
 //描画
 void EffectManager::Draw()
 {
-	for (int i = 0; i < mpEffect.size(); i++)
+	for (size_t i = 0; i < mpEffect.size(); i++)
 	{
 		//アクティブだったら描画
 		if (mpEffect[i]->GetActive() == true)
@@ -69,7 +69,7 @@ void EffectManager::Play(
 	//実行回数のカウント
 	int count = 0;
 
-	for (int i = 0; i < mpEffect.size(); i++)
+	for (size_t i = 0; i < mpEffect.size(); i++)
 	{
 		//アクティブだったら実行
 		if (mpEffect[i]->GetActive() == false)
@@ -94,16 +94,18 @@ void EffectManager::Play_2(
 	, const float& speed
 	, const float& size)
 {
+	UNREFERENCED_PARAMETER(size);
 	const float RAD = XM_PI * 2.0f;
 	int num = 0;
 
-	for (int i = 0; i < mpEffect.size(); i++)
+	for (size_t i = 0; i < mpEffect.size(); i++)
 	{
 		if (mpEffect[i]->GetActive() == false)
 		{
-			float size = static_cast<float>(number);//(float)mpEffect.size();
-			Vector3 vel = Vector3(cos(RAD * static_cast<float>(num) / size + XM_PI / 2.0f),
-				0.0f, sin(RAD * num / size + XM_PI / 2.0f));
+			float Size = static_cast<float>(number);//(float)mpEffect.size();
+
+			Vector3 vel = Vector3(static_cast<float>(cos(RAD * static_cast<float>(num) / Size + XM_PI / 2.0f)),
+				0.0f, static_cast<float>(sin(RAD * static_cast<float>(num) / Size + XM_PI / 2.0f)));
 			vel *= 0.1f;
 			mpEffect[i]->Play(pos, color, texture, speed, 0.3f);
 			mpEffect[i]->SetMoveVector(vel);
@@ -130,7 +132,7 @@ void EffectManager::Play_3(
 	//実行回数のカウント
 	int count = 0;
 
-	for (int i = 0; i < mpEffect.size(); i++)
+	for (size_t i = 0; i < mpEffect.size(); i++)
 	{
 		//アクティブだったら実行
 		if (mpEffect[i]->GetActive() == false)

@@ -22,13 +22,13 @@ public:
 	virtual void Spawn(const DirectX::SimpleMath::Vector3& pos) = 0;
 
 	//Capsule‚Ì“–‚½‚è”»’è‚ð•Ô‚·
-	virtual const bool&  CheckHitCapsule(const Capsule& capsule) = 0;
+	virtual const bool  CheckHitCapsule(const Capsule& capsule) = 0;
 
 	virtual void Use(const DirectX::SimpleMath::Vector3& pos) = 0;
 
 	virtual const SphereCollision& GetCollision() = 0;
 
-	virtual const bool& GetUseFlag() = 0;
+	virtual const bool GetUseFlag() = 0;
 
 	virtual void SetUseFlag() = 0;
 };

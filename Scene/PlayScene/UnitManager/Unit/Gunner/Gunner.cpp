@@ -8,27 +8,16 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-//攻撃の間隔
-const int AttackInterval(120);
-//索敵距離
-const float SearchDistance(8.0f);
-
-//レベルアップにかかる時間
-const int LevelUpTime_Level_2(60);
-const int LevelUpTime_Level_3(120);
-const int LevelUpTime_Level_4(180);
-const int LevelUpTime_Level_5(240);
-
 //コンストラクタ
 Gunner::Gunner()
 	: mLevel(UNIT_LEVEL::LEVEL_1)
 	, mLeftHandPos()
 	, mRightHandPos()
-	, mGunAngle(0.0f)
+	, mGunAngle_X(0.0f)
 	, mAttackMoveTimer(0)
-	, mGunAngle2(0.0f)
-	, mGunAngle3(0.0f)
-	, mAngle(0.0f)
+	, mGunAngle_Y(0.0f)
+	, mGunAngle_Z(0.0f)
+	, mAngle(1.57f)
 	, mAttackTimer(0)
 	, mAttackFlag(false)
 	, mEnemyApproachingFlag(false)
@@ -38,6 +27,9 @@ Gunner::Gunner()
 	, mPowerUpLevel(UNIT_LEVEL::NONE)
 	, mPowerUpFlag(false)
 	, mEffectTimer(0)
+	, mParam()
+	, mEnhanced_timer_during_pause(0)
+	, mNormal_animation_timer(0.0f)
 {
 
 }
@@ -54,7 +46,7 @@ void Gunner::Spawn(const Vector3& pos)
 	//当たり判定の座標の設定
 	mSphereCollision.mPos = pos;
 
-	mSphereCollision.mRadius = 0.5f;
+	mSphereCollision.mRadius = mParam.mHit_test_size;
 }
 
 //レベルの設定
@@ -64,20 +56,6 @@ void Gunner::SetLevel(const UNIT_LEVEL& level)
 
 	mEnemyApproachingFlag = false;
 	mReinforcementFlag = true;
-}
-
-//エフェクトの色の設定
-const Vector3 Gunner::GetEffectColor()
-{
-	switch (mLevel)
-	{
-		case UNIT_LEVEL::LEVEL_1: {return Vector3(0.0f, 0.0f, 1.0f); break; }
-		case UNIT_LEVEL::LEVEL_2: {return Vector3(0.0f, 1.0f, 0.0f); break; }
-		case UNIT_LEVEL::LEVEL_3: {return Vector3(1.0f, 0.0f, 0.0f); break; }
-		case UNIT_LEVEL::LEVEL_4: {return Vector3(1.0f, 1.0f, 0.0f); break; }
-		case UNIT_LEVEL::LEVEL_5: {return Vector3(1.0f, 0.5f, 0.0f); break; }
-		default:break;
-	}
 }
 
 //更新
@@ -96,6 +74,15 @@ void Gunner::Update(
 	}
 	else
 	{
+		DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+
+		//一時停止中なら戻る
+		if (mpDoubleSpeed.GetExecutionFlag() == false)
+		{
+			mEnhanced_timer_during_pause++;
+			return;
+		}
+		mEnhanced_timer_during_pause = 0;
 		mReinforcementTimer++;
 
 		//強化を終了させる
@@ -104,7 +91,7 @@ void Gunner::Update(
 			mReinforcementFlag = false;
 			mReinforcementTimer = 0;
 
-			pEffectManager->Play_2(Vector3(pos.x, pos.y - 0.3f, pos.z), GetEffectColor(), 10, TEXTURE3D::SHADOW);
+			pEffectManager->Play_2(Vector3(pos.x, pos.y - mParam.mShift_the_coordinates_of_the_effect, pos.z), mColor, 10, TEXTURE3D::SHADOW);
 		}
 	}
 }
@@ -115,13 +102,20 @@ void Gunner::Draw(const Vector3& pos)
 	//モデルの描画
 	if (mReinforcementFlag == true)
 	{
+		DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+
 		//強化中は点滅させる
 		int Reinforcement = mReinforcementTimer;
-		Reinforcement %= 2;
-		if (Reinforcement == 0)
+
+		//一時停止中なら戻る
+		if (mpDoubleSpeed.GetExecutionFlag() == false)
 		{
-			return;
+			Reinforcement = mEnhanced_timer_during_pause;
 		}
+
+		Reinforcement %= mParam.mBlinkinginterval;
+
+		if (Reinforcement == 0)return;
 	}
 
 	DrawManager& pObject = DrawManager::GetInstance();
@@ -130,7 +124,8 @@ void Gunner::Draw(const Vector3& pos)
 		, head			//頭
 		, rightHand		//右手	
 		, leftHand		//左手
-		, gun;		//剣
+		, gun		//剣
+		, gunhat;
 
 	//ワールドの初期化
 	body = Matrix::Identity;
@@ -138,40 +133,47 @@ void Gunner::Draw(const Vector3& pos)
 	rightHand = Matrix::Identity;
 	leftHand = Matrix::Identity;
 	gun = Matrix::Identity;
+	gunhat = Matrix::Identity;
 
 	//胴
-	body = Matrix::CreateScale(0.8f);
+	body = Matrix::CreateScale(mParam.mTorso_size);
 	body *= Matrix::CreateRotationY(mAngle);
-	body *= Matrix::CreateTranslation(pos);
+	body *= Matrix::CreateTranslation(Vector3(pos.x, pos.y - 0.5f, pos.z));
 
-	pObject.GetGeometry()->DrawSetColor(body, SHAPE::CONE, Color(GetEffectColor()));
+	pObject.GetGeometry()->DrawSetColor(body, SHAPE::CONE, Color(mColor));
 
 	//頭
-	head = Matrix::CreateScale(0.5f);
-	head *= Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
+	head = Matrix::CreateScale(mParam.mHead_size);
+	head *= Matrix::CreateTranslation(mParam.mHead_coordinates);
 	head *= body;
 
 	pObject.GetGeometry()->Draw(head, SHAPE::SPHERE, Colors::BurlyWood);
 
+	gunhat *= Matrix::CreateScale(0.0055f);
+	gunhat *= Matrix::CreateTranslation(0.0f, 0.3f, 0.0f);
+	gunhat *= Matrix::CreateRotationY(XMConvertToRadians(180.0f));
+	gunhat *= head;
+	pObject.GetModel()->Draw(gunhat, MODEL_NAME::GUNHAT);
+
 	//右手
-	rightHand = Matrix::CreateScale(0.3f);
+	rightHand = Matrix::CreateScale(mParam.mRight_hand_size);
 	rightHand *= Matrix::CreateTranslation(mRightHandPos);
 	rightHand *= body;
 
 	pObject.GetGeometry()->Draw(rightHand, SHAPE::SPHERE, Colors::BurlyWood);
 
 	//左手
-	leftHand = Matrix::CreateScale(0.3f);
+	leftHand = Matrix::CreateScale(mParam.mLeft_hand_size);
 	leftHand *= Matrix::CreateTranslation(mLeftHandPos);
 	leftHand *= body;
 
 	pObject.GetGeometry()->Draw(leftHand, SHAPE::SPHERE, Colors::BurlyWood);
 
 	//銃
-	gun = Matrix::CreateScale(0.45f);
-	gun *= Matrix::CreateRotationY(mGunAngle);
-	gun *= Matrix::CreateRotationX(mGunAngle2);
-	gun *= Matrix::CreateRotationZ(mGunAngle3);
+	gun = Matrix::CreateScale(mParam.mGun_size);
+	gun *= Matrix::CreateRotationY(mGunAngle_Y);
+	gun *= Matrix::CreateRotationX(mGunAngle_X);
+	gun *= Matrix::CreateRotationZ(mGunAngle_Z);
 	gun *= rightHand;
 
 	pObject.GetModel()->Draw(gun, MODEL_NAME::GUN);
@@ -185,23 +187,30 @@ void Gunner::EffectDraw(const DirectX::SimpleMath::Vector3& pos, EffectManager* 
 		DrawManager& pObject = DrawManager::GetInstance();
 
 		//発射間隔のゲージを描画
-		float length = ((static_cast<float>(AttackInterval - mAttackTimer) / static_cast<float>(AttackInterval))) * 0.8f;
+		float length = ((static_cast<float>(mParam.mAttack_interval - mAttackTimer) / static_cast<float>(mParam.mAttack_interval))) * mParam.mAttack_interval_gauge_drawing;
 
 		Matrix world = Matrix::Identity;
 		pObject.GetTexture3D()->DrawBillboard(world);
-		world *= Matrix::CreateScale(length, 0.1f, 0.1f);
-		world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y + 0.7f, pos.z - 0.2f));
-		pObject.GetTexture3D()->SetColor(1.0f);
+		world *= Matrix::CreateScale(mParam.Attack_interval_gauge_size(length));
+		world *= Matrix::CreateTranslation(mParam.Attack_interval_gauge_position(pos));
+		pObject.GetTexture3D()->SetColor(mParam.mAttack_interval_gauge_color);
 		pObject.GetTexture3D()->DrawShader(world, TEXTURE3D::ENEMY_HP);
 	}
 
+	//王に強化されているときのエフェクト
 	if (mPowerUpFlag == true)
 	{
-		++mEffectTimer %= 60;
+		++mEffectTimer %= mParam.mPower_up_effect_timer;
 
 		if (mEffectTimer == 0)
 		{
-			pEffectManager->Play_3(Vector3(pos.x, pos.y - 0.5f, pos.z), Vector3(0.0f, 1.0f, 0.0f), 1, TEXTURE3D::POWER_UP_EFFECT, 0.05f, 1.0f);
+			pEffectManager->Play_3(
+				mParam.Effect_coordinate(pos)
+				, mParam.mEffect_color_preference
+				, mParam.mEffect_generation_number
+				, TEXTURE3D::POWER_UP_EFFECT
+				, mParam.mPower_up_effect_speed
+				, mParam.mPower_up_effect_size);
 		}
 	}
 }
@@ -223,25 +232,30 @@ void Gunner::Attack(EnemyManager* pEnemyManager, BulletManager* pBulletManager
 	, const DirectX::SimpleMath::Vector3& pos)
 {
 	DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+
+	//一時停止中なら戻る
+	if (mpDoubleSpeed.GetExecutionFlag() == false)return;
+
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
 	//敵の座標
 	Vector3 EnemyPos = pEnemyManager->ClosestPos(pos);
+	pEnemyManager->GetEnemyActive();
 
 	//Enemyとの距離を取得
 	Vector3 Len = pos - EnemyPos;
 
 	for (int i = 0; i < mpDoubleSpeed.GetSpeed(); i++)
 	{
-		++mAttackTimer %= AttackInterval;
+		++mAttackTimer %= mParam.mAttack_interval;
 
-		if (mAttackTimer == 0)
+		if (mAttackTimer == mParam.mZero_got_moment_attack)
 		{
 			break;
 		}
 	}
 
-	if (mAttackTimer == 0)
+	if (mAttackTimer == mParam.mZero_got_moment_attack)
 	{
 		//敵がいなければ発射しない
 		if (pEnemyManager->GetEnemyActive() == false)
@@ -251,7 +265,7 @@ void Gunner::Attack(EnemyManager* pEnemyManager, BulletManager* pBulletManager
 		}
 
 		//距離が近ければ発射
-		if (Len.Length() <= SearchDistance)
+		if (Len.Length() <= mParam.mAttack_range)
 		{
 			mEnemyApproachingFlag = true;
 
@@ -279,49 +293,58 @@ void Gunner::AttackAnimation()
 	//通常
 	if (mAttackFlag == false)
 	{
-		mAttackMoveTimer = 0;
-
-		mLeftHandPos = Vector3(-0.3f, 0.0f, 0.5f);
-		mRightHandPos = Vector3(-0.3f, -0.3f, -0.3f);
-		mGunAngle = 3.14f;
-		mGunAngle2 = -0.3f;
-		mGunAngle3 = 0.0f;
+		mAttackMoveTimer = mParam.mAttack_motion_timer_zero_time;
+		mNormal_animation_timer += 0.1f;
+		mLeftHandPos = mParam.mNormal_when_left_hand_coordinate;
+		mLeftHandPos.y = mParam.mNormal_when_left_hand_coordinate.y * static_cast<float>(sin(mNormal_animation_timer) * 0.3f);
+		mRightHandPos = mParam.mNormal_when_right_hand_coordinate;
+		mRightHandPos.y = mParam.mNormal_when_right_hand_coordinate.y * static_cast<float>(sin(mNormal_animation_timer) * 0.3f);
+		mGunAngle_Y = mParam.mGun_y_axis_rotation_angle_initial_angle;
+		mGunAngle_X = mParam.mGun_x_axis_rotation_angle_initial_angle;
+		mGunAngle_Z = mParam.mGun_z_axis_rotation_angle_initial_angle;
 	}
 	//攻撃時
 	else
 	{
-		if (mAttackMoveTimer == 0)
+		DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+		//一時停止中なら戻る
+		if (mpDoubleSpeed.GetExecutionFlag() == false)return;
+
+		if (mAttackMoveTimer == mParam.mAttack_motion_timer_zero_time)
 		{
-			mLeftHandPos = Vector3(-0.7f, 0.0f, -0.2f);
-			mRightHandPos = Vector3(0.0f, 0.0f, -0.2f);
-			mGunAngle = 1.57f;
-			mGunAngle2 = 0.0f;
+			mLeftHandPos = mParam.mLeft_hand_coordinate_at_attack_start;
+			mRightHandPos = mParam.mRight_hand_coordinate_at_attack_start;
+			mGunAngle_Y = mParam.mAttack_start_when_gun_y_axis_initial_rotation_angle;
+			mGunAngle_X = mParam.mAttack_start_when_gun_x_axis_initial_rotation_angle;
 		}
-		else if (mAttackMoveTimer < 15)
+		else if (mAttackMoveTimer < mParam.mAttack_animation_time)
 		{
-			mLeftHandPos.y += 0.015f;
-			mGunAngle3 -= 0.02f;
+			mLeftHandPos += mParam.mLeft_hand_move_at_attack;
+			mGunAngle_Z -= mParam.mAttack_when_gun_z_axis_rotation;
 		}
 		else
 		{
 			mAttackFlag = false;
 		}
 
-		mAttackMoveTimer++;
+		if (mpDoubleSpeed.GetExecutionFlag() == true)
+			mAttackMoveTimer++;
 	}
 }
 
 //レベルアップにかかる時間
-const int& Gunner::LevelUpTime()
+const int Gunner::LevelUpTime()
 {
 	switch (mLevel)
 	{
-		case UNIT_LEVEL::LEVEL_2: {return LevelUpTime_Level_2; break; }
-		case UNIT_LEVEL::LEVEL_3: {return LevelUpTime_Level_3; break; }
-		case UNIT_LEVEL::LEVEL_4: {return LevelUpTime_Level_4; break; }
-		case UNIT_LEVEL::LEVEL_5: {return LevelUpTime_Level_5; break; }
+		case UNIT_LEVEL::LEVEL_2: {return mParam.mLevelUpTime_Level_2; break; }
+		case UNIT_LEVEL::LEVEL_3: {return mParam.mLevelUpTime_Level_3; break; }
+		case UNIT_LEVEL::LEVEL_4: {return mParam.mLevelUpTime_Level_4; break; }
+		case UNIT_LEVEL::LEVEL_5: {return mParam.mLevelUpTime_Level_5; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //攻撃力の設定
@@ -329,26 +352,30 @@ const int Gunner::GetOffensivePower()
 {
 	switch (mLevel)
 	{
-		case UNIT_LEVEL::LEVEL_1: {return 3; break; }
-		case UNIT_LEVEL::LEVEL_2: {return 6; break; }
-		case UNIT_LEVEL::LEVEL_3: {return 9; break; }
-		case UNIT_LEVEL::LEVEL_4: {return 12; break; }
-		case UNIT_LEVEL::LEVEL_5: {return 15; break; }
+		case UNIT_LEVEL::LEVEL_1: {return mParam.mAttack_power_when_level_1; break; }
+		case UNIT_LEVEL::LEVEL_2: {return mParam.mAttack_power_when_level_2; break; }
+		case UNIT_LEVEL::LEVEL_3: {return mParam.mAttack_power_when_level_3; break; }
+		case UNIT_LEVEL::LEVEL_4: {return mParam.mAttack_power_when_level_4; break; }
+		case UNIT_LEVEL::LEVEL_5: {return mParam.mAttack_power_when_level_5; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //パワーアップするレベル
-const int& Gunner::PowerUpLevel()
+const int Gunner::PowerUpLevel()
 {
 	switch (mPowerUpLevel)
 	{
-		case UNIT_LEVEL::LEVEL_1: {return 1; break; }
-		case UNIT_LEVEL::LEVEL_2: {return 2; break; }
-		case UNIT_LEVEL::LEVEL_3: {return 3; break; }
-		case UNIT_LEVEL::LEVEL_4: {return 4; break; }
-		case UNIT_LEVEL::LEVEL_5: {return 500; break; }
-		case UNIT_LEVEL::NONE: {return 0; break; }
+		case UNIT_LEVEL::LEVEL_1: {return mParam.mAttack_power_ascend_in_power_up_1; break; }
+		case UNIT_LEVEL::LEVEL_2: {return mParam.mAttack_power_ascend_in_power_up_2; break; }
+		case UNIT_LEVEL::LEVEL_3: {return mParam.mAttack_power_ascend_in_power_up_3; break; }
+		case UNIT_LEVEL::LEVEL_4: {return mParam.mAttack_power_ascend_in_power_up_4; break; }
+		case UNIT_LEVEL::LEVEL_5: {return mParam.mAttack_power_ascend_in_power_up_5; break; }
+		case  UNIT_LEVEL::NONE: {return 0; break; }
 		default:break;
 	}
+
+	return 0;
 }

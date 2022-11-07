@@ -43,7 +43,7 @@ void Mallet::Draw()
 
 	pObject.GetTexture3D()->DrawBillboard(world);
 	world *= Matrix::CreateScale(0.6f);
-	world *= Matrix::CreateTranslation(mPos.x, mPos.y - (sin(mFloating) * 0.2f), mPos.z);
+	world *= Matrix::CreateTranslation(mPos.x, mPos.y - static_cast<float>((sin(mFloating) * 0.2f)), mPos.z);
 
 	pObject.GetTexture3D()->DrawShader(world, TEXTURE3D::MALLET);
 }
@@ -53,15 +53,15 @@ void Mallet::Spawn(const Vector3& pos)
 {
 	mPos = pos;
 
-	mCapsule.a = pos;
-	mCapsule.b = pos;
-	mCapsule.r = 1.0f;
+	mCapsule.mStart = pos;
+	mCapsule.mEnd = pos;
+	mCapsule.mRadius = 1.0f;
 
 	mUse = false;
 }
 
 //Capsule‚Ì“–‚½‚è”»’è‚ð•Ô‚·
-const bool& Mallet::CheckHitCapsule(const Capsule& capsule)
+const bool Mallet::CheckHitCapsule(const Capsule& capsule)
 {
 	InputManager& inputManager = InputManager::GetInstance();
 

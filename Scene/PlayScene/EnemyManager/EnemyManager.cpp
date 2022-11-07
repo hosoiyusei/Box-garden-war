@@ -6,9 +6,10 @@
 #include"EnemySpawnInformation.h"
 #include"../Player/Player.h"
 #include"../ItemManager/ItemManager.h"
+#include"../Stage/StageNum.h"
 
 //Enemyを作る数
-const int ENEMY_NUM(500);
+const int ENEMY_NUM(170);
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -17,9 +18,10 @@ using namespace DirectX::SimpleMath;
 EnemyManager::EnemyManager()
 	: mpEnemy()
 	, mpBulletManager(nullptr)
-	, mEnemyActive(false)
 	, mpEnemyManager(nullptr)
 	, mpPlayer(nullptr)
+	, mpItemManager(nullptr)
+	, mNumber_of_remaining_Enemy(0)
 {
 
 }
@@ -37,13 +39,16 @@ void EnemyManager::Initialize(
 	, EffectManager* pEffectManager
 	, EnemyManager* pEnemyManager
 	, Player* pPlayer
-, ItemManager* pItemManager)
+	, ItemManager* pItemManager
+	, Tutorial* pTutorial)
 {
 	//弾の管理者のポインタの取得
 	mpBulletManager = pBulletManager;
 
 	//スポーン情報のポインタの作成
 	mpEnemySpawnInformation = std::make_unique<EnemySpawnInformation>();
+
+	mpEnemySpawnInformation->Initialize(pPlayer, pTutorial);
 
 	//Enemyの管理者のポインタの取得
 	mpEnemyManager = pEnemyManager;
@@ -56,20 +61,33 @@ void EnemyManager::Initialize(
 	{
 		mpEnemy.push_back(std::make_unique<Enemy>());
 		mpEnemy[i]->Initialize(
-			pStageRead
+			pEnemyManager
+			, pStageRead
 			, pEffectManager
 			, pPlayer
 			, pItemManager);
+	}
+
+	StageNum& setstage = StageNum::GetInstance();
+
+	if (setstage.GetStageNum() != STAGE_NUM::TUTORIAL)
+	{
+		mNumber_of_remaining_Enemy = 170;
+	}
+	else
+	{
+		mNumber_of_remaining_Enemy = 50;
 	}
 }
 
 //更新
 void EnemyManager::Update()
 {
-	for (int i = 0; i < mpEnemy.size(); i++)
+	for (size_t i = 0; i < mpEnemy.size(); i++)
 	{
 		//アクティブだったら更新
-		if (mpEnemy[i]->GetActive() == true && mpEnemy[i]->GetGoal() != true)
+		if (mpEnemy[i]->GetActive() == true && mpEnemy[i]->GetGoal() != true ||
+			mpEnemy[i]->GetDeath() == true && mpEnemy[i]->GetGoal() != true)
 		{
 			mpEnemy[i]->Update();
 		}
@@ -83,10 +101,11 @@ void EnemyManager::Update()
 //描画
 void EnemyManager::Draw()
 {
-	for (int i = 0; i < mpEnemy.size(); i++)
+	for (size_t i = 0; i < mpEnemy.size(); i++)
 	{
 		//アクティブだったら描画
-		if (mpEnemy[i]->GetActive() == true && mpEnemy[i]->GetGoal() != true)
+		if (mpEnemy[i]->GetActive() == true && mpEnemy[i]->GetGoal() != true||
+			mpEnemy[i]->GetDeath() == true && mpEnemy[i]->GetGoal() != true)
 		{
 			mpEnemy[i]->Draw();
 		}
@@ -96,7 +115,7 @@ void EnemyManager::Draw()
 //エフェクトの描画
 void EnemyManager::EffectDraw()
 {
-	for (int i = 0; i < mpEnemy.size(); i++)
+	for (size_t i = 0; i < mpEnemy.size(); i++)
 	{
 		//アクティブだったら描画
 		if (mpEnemy[i]->GetActive() == true && mpEnemy[i]->GetGoal() != true)
@@ -109,40 +128,56 @@ void EnemyManager::EffectDraw()
 //Enemyの当たり判定
 void EnemyManager::CheckHitEnemy()
 {
-	for (int i = 0; i < mpEnemy.size(); i++)
+	for (size_t i = 0; i < mpEnemy.size(); i++)
 	{
-		if (mpEnemy[i]->GetActive() == true)
+		if (mpEnemy[i]->GetActive() == true &&
+			mpEnemy[i]->GetDeath() == false)
 		{
-			mpBulletManager->CheckHitCollision(
-				mpEnemy[i].get());
+			mpBulletManager->CheckHitCollision(mpEnemy[i].get());
 
 			mpItemManager->CheckHitCollision(mpEnemy[i].get());
 		}
 	}
 }
 
-//一番近いEnemyの座標
-const DirectX::SimpleMath::Vector3& EnemyManager::ClosestPos(const DirectX::SimpleMath::Vector3& pos)
+//Enemyがいるかどうか
+const bool EnemyManager::GetEnemyActive()
 {
-	DirectX::SimpleMath::Vector3 len1, len2, target;
+	for (size_t i = 0; i < mpEnemy.size(); i++)
+	{
+		if (mpEnemy[i]->GetActive() == true && mpEnemy[i]->GetDeath() == false)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+//一番近いEnemyの座標
+const Vector3 EnemyManager::ClosestPos(const Vector3& pos
+	, const ENEMY_TYPE& type)
+{
+	Vector3 len1, len2, target;
 	len2 = Vector3(0.0f, 0.0f, 0.0f);
 
-	mEnemyActive = false;
+	target = Vector3(1000.0f, 0.0f, 0.0f);
 
-	for (int i = 0; i < mpEnemy.size(); i++)
+	for (size_t i = 0; i < mpEnemy.size(); i++)
 	{
-		if (mpEnemy[i]->GetActive() == true)
+		if (mpEnemy[i]->GetActive() == true && mpEnemy[i]->GetDeath() == false)
 		{
-			mEnemyActive = true;
-
-			//Enemyとの距離
-			len1 = pos - mpEnemy[i]->GetPos();
-			if (len2.Length() > len1.Length() ||
-				len2 == Vector3(0.0f, 0.0f, 0.0f))
+			if (mpEnemy[i]->GetEnemyType() != type)
 			{
-				len2 = len1;
-				//一番近いEnemyの座標を取得
-	 			target = mpEnemy[i]->GetPos();
+				//Enemyとの距離
+				len1 = pos - mpEnemy[i]->GetPos();
+				if (len2.Length() > len1.Length() ||
+					len2 == Vector3(0.0f, 0.0f, 0.0f))
+				{
+					len2 = len1;
+					//一番近いEnemyの座標を取得
+					target = mpEnemy[i]->GetPos();
+				}
 			}
 		}
 	}
@@ -152,22 +187,18 @@ const DirectX::SimpleMath::Vector3& EnemyManager::ClosestPos(const DirectX::Simp
 }
 
 //一番近いEnemyの種類
-const ENEMY_TYPE& EnemyManager::ClosestPosEnemyType(const DirectX::SimpleMath::Vector3& pos)
+const ENEMY_TYPE EnemyManager::ClosestPosEnemyType(const Vector3& pos)
 {
-	DirectX::SimpleMath::Vector3 len1, len2;
+	Vector3 len1, len2;
 	len2 = Vector3(0.0f, 0.0f, 0.0f);
 
 	//Enemyの種類
-	ENEMY_TYPE target;
+	ENEMY_TYPE target = ENEMY_TYPE::NONE;
 
-	mEnemyActive = false;
-
-	for (int i = 0; i < mpEnemy.size(); i++)
+	for (size_t i = 0; i < mpEnemy.size(); i++)
 	{
-		if (mpEnemy[i]->GetActive() == true)
+		if (mpEnemy[i]->GetActive() == true && mpEnemy[i]->GetDeath() == false)
 		{
-			mEnemyActive = true;
-
 			//Enemyとの距離
 			len1 = pos - mpEnemy[i]->GetPos();
 			if (len2.Length() > len1.Length() ||
@@ -190,7 +221,7 @@ void EnemyManager::EnemySpawn(
 	, const ENEMY_TYPE& type
 	, const ENEMY_LEVEL& level)
 {
-	for (int i = 0; i < mpEnemy.size(); i++)
+	for (size_t i = 0; i < mpEnemy.size(); i++)
 	{
 		//Enemyが使われていなかったらスポーン
 		if (mpEnemy[i]->GetActive() == false &&

@@ -5,7 +5,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 // カプセルとカプセルの衝突判定関数
-const bool& Capsule::HitCheck_Capsule2Capsule(
+const bool Capsule::HitCheck_Capsule2Capsule(
 	  const Capsule& capsule1
 	, const Capsule& capsule2)
 {
@@ -15,16 +15,16 @@ const bool& Capsule::HitCheck_Capsule2Capsule(
 	DirectX::SimpleMath::Vector3 c1, c2;
 
 	// カプセルの中心の線分間の距離の平方を計算
-	float dist2 = ClosestPtSegmentSegment(capsule1.a, capsule1.b, capsule2.a, capsule2.b, s, t, c1, c2);
+	float dist2 = ClosestPtSegmentSegment(capsule1.mStart, capsule1.mEnd, capsule2.mStart, capsule2.mEnd, s, t, c1, c2);
 
-	float radius = capsule1.r + capsule2.r;
+	float radius = capsule1.mRadius + capsule2.mRadius;
 
 	return dist2 <= radius * radius;
 }
 
 // クランプ関数
 
-const float& Capsule::Clamp(
+const float Capsule::Clamp(
 	  const float& n
 	, const float& min
 	, const float& max)
@@ -42,7 +42,7 @@ const float& Capsule::Clamp(
 // s: 線分１上の最短位置を表す係数 t: 線分2上の最短位置を表す係数
 // c1: 線分１上の最短距離の位置 c2: 線分2上の最短距離の位置
 // 返り値: ２つの線分の最短距離の平方
-const float& Capsule::ClosestPtSegmentSegment(
+const float Capsule::ClosestPtSegmentSegment(
 	  const Vector3& p1
 	, const Vector3& q1
 	, const Vector3& p2

@@ -16,5 +16,5 @@ struct SphereCollision
 
 	}
 
-	const bool& CheckHit(const SphereCollision& Collision);
+	const bool CheckHit(const SphereCollision& Collision);
 };

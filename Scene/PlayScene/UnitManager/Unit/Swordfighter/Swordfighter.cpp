@@ -8,17 +8,6 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-//攻撃の間隔
-const int AttackInterval(60);
-//索敵距離
-const float SearchDistance(1.3f);
-
-//レベルアップにかかる時間
-const int LevelUpTime_Level_2(60);
-const int LevelUpTime_Level_3(120);
-const int LevelUpTime_Level_4(180);
-const int LevelUpTime_Level_5(240);
-
 //コンストラクタ
 Swordfighter::Swordfighter()
 	:mLeftHandPos(0.0f)
@@ -26,7 +15,7 @@ Swordfighter::Swordfighter()
 	, mSwordAngle(0.0f)
 	, mAttackMoveTimer(0)
 	, mLevel(UNIT_LEVEL::LEVEL_1)
-	, mAngle(0.0f)
+	, mAngle(1.57f)
 	, mAttackTimer(0)
 	, mAttackFlag(false)
 	, mEnemyApproachingFlag(false)
@@ -36,6 +25,8 @@ Swordfighter::Swordfighter()
 	, mPowerUpLevel(UNIT_LEVEL::NONE)
 	, mPowerUpFlag(false)
 	, mEffectTimer(0)
+	, mEnhanced_timer_during_pause(0)
+	, mNormal_animation_timer(0.0f)
 {
 
 }
@@ -52,7 +43,7 @@ void Swordfighter::Spawn(const Vector3& pos)
 	//当たり判定の座標の設定
 	mSphereCollision.mPos = pos;
 
-	mSphereCollision.mRadius = 0.5f;
+	mSphereCollision.mRadius = mParam.mHit_test_size;
 }
 
 //レベルの設定
@@ -62,20 +53,6 @@ void Swordfighter::SetLevel(const UNIT_LEVEL& level)
 
 	mEnemyApproachingFlag = false;
 	mReinforcementFlag = true;
-}
-
-//エフェクトの色の設定
-const Vector3 Swordfighter::GetEffectColor()
-{
-	switch (mLevel)
-	{
-		case UNIT_LEVEL::LEVEL_1: {return Vector3(0.0f, 0.0f, 1.0f); break; }
-		case UNIT_LEVEL::LEVEL_2: {return Vector3(0.0f, 1.0f, 0.0f); break; }
-		case UNIT_LEVEL::LEVEL_3: {return Vector3(1.0f, 0.0f, 0.0f); break; }
-		case UNIT_LEVEL::LEVEL_4: {return Vector3(1.0f, 1.0f, 0.0f); break; }
-		case UNIT_LEVEL::LEVEL_5: {return Vector3(1.0f, 0.5f, 0.0f); break; }
-		default:break;
-	}
 }
 
 //更新
@@ -94,6 +71,15 @@ void Swordfighter::Update(
 	}
 	else
 	{
+		DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+
+		//一時停止中なら戻る
+		if (mpDoubleSpeed.GetExecutionFlag() == false)
+		{
+			mEnhanced_timer_during_pause++;
+			return;
+		}
+		mEnhanced_timer_during_pause = 0;
 		mReinforcementTimer++;
 
 		//強化を終了させる
@@ -102,7 +88,7 @@ void Swordfighter::Update(
 			mReinforcementFlag = false;
 			mReinforcementTimer = 0;
 
-			pEffectManager->Play_2(Vector3(pos.x, pos.y - 0.3f, pos.z), GetEffectColor(), 10, TEXTURE3D::SHADOW);
+			pEffectManager->Play_2(Vector3(pos.x, pos.y - mParam.mShift_the_coordinates_of_the_effect, pos.z), mColor, mParam.mNumber_of_effects_generated, TEXTURE3D::SHADOW);
 		}
 	}
 }
@@ -113,13 +99,20 @@ void Swordfighter::Draw(const Vector3& pos)
 	//モデルの描画
 	if (mReinforcementFlag == true)
 	{
+		DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+
 		//強化中は点滅させる
 		int Reinforcement = mReinforcementTimer;
-		Reinforcement %= 2;
-		if (Reinforcement == 0)
+
+		//一時停止中なら戻る
+		if (mpDoubleSpeed.GetExecutionFlag() == false)
 		{
-			return;
+			Reinforcement = mEnhanced_timer_during_pause;
 		}
+
+		Reinforcement %= mParam.mBlinkinginterval;
+
+		if (Reinforcement == 0)return;
 	}
 
 	DrawManager& pObject = DrawManager::GetInstance();
@@ -142,34 +135,41 @@ void Swordfighter::Draw(const Vector3& pos)
 	//胴
 	body = Matrix::CreateScale(0.8f);
 	body *= Matrix::CreateRotationY(mAngle);
-	body *= Matrix::CreateTranslation(pos);
+	body *= Matrix::CreateTranslation(Vector3(pos.x, pos.y-0.5f, pos.z));
 
-	pObject.GetGeometry()->DrawSetColor(body, SHAPE::CONE, Color(GetEffectColor()));
+	pObject.GetGeometry()->DrawSetColor(body, SHAPE::CONE, Color(mColor));
 
 	//頭
-	head = Matrix::CreateScale(0.5f);
-	head *= Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
+	head = Matrix::CreateScale(mParam.mHead_size);
+	head *= Matrix::CreateTranslation(mParam.mHead_coordinates);
 	head *= body;
 
 	pObject.GetGeometry()->Draw(head, SHAPE::SPHERE, Colors::BurlyWood);
 
 	//右手
-	rightHand = Matrix::CreateScale(0.3f);
+	rightHand = Matrix::CreateScale(mParam.mRight_hand_size);
 	rightHand *= Matrix::CreateTranslation(mRightHandPos);
 	rightHand *= body;
 
 	pObject.GetGeometry()->Draw(rightHand, SHAPE::SPHERE, Colors::BurlyWood);
 
 	//左手
-	leftHand = Matrix::CreateScale(0.3f);
+	leftHand = Matrix::CreateScale(mParam.mLeft_hand_size);
 	leftHand *= Matrix::CreateTranslation(mLeftHandPos);
 	leftHand *= body;
 
 	pObject.GetGeometry()->Draw(leftHand, SHAPE::SPHERE, Colors::BurlyWood);
 
 	//剣
-	sword = Matrix::CreateScale(0.2f);
-	sword *= Matrix::CreateRotationZ(mSwordAngle);
+
+	sword = Matrix::CreateScale(0.004f);
+	sword *= Matrix::CreateRotationX(XMConvertToRadians(mSwordAngle));
+	sword *= Matrix::CreateRotationY(XMConvertToRadians(90.0f));
+	sword *= Matrix::CreateTranslation(-0.6f, 0.5f, 0.0f);
+
+	//sword = Matrix::CreateScale(mParam.mSword_size);
+	//sword *= Matrix::CreateRotationZ(mSwordAngle);
+	//sword *= Matrix::CreateTranslation(0.4f, -0.3f, -0.0f);
 	sword *= rightHand;
 
 	pObject.GetModel()->Draw(sword, MODEL_NAME::SWORD);
@@ -183,23 +183,29 @@ void Swordfighter::EffectDraw(const DirectX::SimpleMath::Vector3& pos, EffectMan
 		DrawManager& pObject = DrawManager::GetInstance();
 
 		//発射間隔のゲージを描画
-		float length = ((static_cast<float>(AttackInterval - mAttackTimer) / static_cast<float>(AttackInterval))) * 0.8f;
+		float length = ((static_cast<float>(mParam.mAttack_interval - mAttackTimer) / static_cast<float>(mParam.mAttack_interval))) * mParam.mAttack_interval_gauge_drawing;
 
 		Matrix world = Matrix::Identity;
 		pObject.GetTexture3D()->DrawBillboard(world);
-		world *= Matrix::CreateScale(length, 0.1f, 0.1f);
-		world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y + 0.7f, pos.z - 0.2f));
-		pObject.GetTexture3D()->SetColor(1.0f);
+		world *= Matrix::CreateScale(mParam.Attack_interval_gauge_size(length));
+		world *= Matrix::CreateTranslation(mParam.Attack_interval_gauge_position(pos));
+		pObject.GetTexture3D()->SetColor(mParam.mAttack_interval_gauge_color);
 		pObject.GetTexture3D()->DrawShader(world, TEXTURE3D::ENEMY_HP);
 	}
 
 	if (mPowerUpFlag == true)
 	{
-		++mEffectTimer %= 60;
+		++mEffectTimer %= mParam.mPower_up_effect_timer;
 
 		if (mEffectTimer == 0)
 		{
-			pEffectManager->Play_3(Vector3(pos.x, pos.y - 0.5f, pos.z), Vector3(0.0f, 1.0f, 0.0f), 1, TEXTURE3D::POWER_UP_EFFECT, 0.05f, 1.0f);
+			pEffectManager->Play_3(
+				mParam.Effect_coordinate(pos)
+				, mParam.mEffect_color_preference
+				, mParam.mEffect_generation_number
+				, TEXTURE3D::POWER_UP_EFFECT
+				, mParam.mPower_up_effect_speed
+				, mParam.mPower_up_effect_size);
 		}
 	}
 }
@@ -221,25 +227,29 @@ void Swordfighter::Attack(EnemyManager* pEnemyManager, BulletManager* pBulletMan
 	, const DirectX::SimpleMath::Vector3& pos)
 {
 	DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+
+	//一時停止中なら戻る
+	if (mpDoubleSpeed.GetExecutionFlag() == false)return;
+
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
 	//敵の座標
-	Vector3 EnemyPos = pEnemyManager->ClosestPos(pos);
+	Vector3 EnemyPos = pEnemyManager->ClosestPos(pos, ENEMY_TYPE::Witch);
 
 	//Enemyとの距離を取得
 	Vector3 Len = pos - EnemyPos;
 
 	for (int i = 0; i < mpDoubleSpeed.GetSpeed(); i++)
 	{
-		++mAttackTimer %= AttackInterval;
+		++mAttackTimer %= mParam.mAttack_interval;
 
-		if (mAttackTimer == 0)
+		if (mAttackTimer == mParam.mZero_got_moment_attack)
 		{
 			break;
 		}
 	}
 
-	if (mAttackTimer == 0)
+	if (mAttackTimer == mParam.mZero_got_moment_attack)
 	{
 		//敵がいなければ発射しない
 		if (pEnemyManager->GetEnemyActive() == false)
@@ -249,28 +259,20 @@ void Swordfighter::Attack(EnemyManager* pEnemyManager, BulletManager* pBulletMan
 		}
 
 		//距離が近ければ発射
-		if (Len.Length() <= SearchDistance)
+		if (Len.Length() <= mParam.mAttack_range)
 		{
 			mEnemyApproachingFlag = true;
-			ENEMY_TYPE enemytype = pEnemyManager->ClosestPosEnemyType(pos);
+			
+			//弾を発射
+			mAttackFlag = true;
 
 			//近いEnemyの方向を向く
-			//魔法使いでなければ
-			if (enemytype != ENEMY_TYPE::Witch)
-			{
-				mAttackFlag = true;
-				mAngle = -atan2f(pos.z - EnemyPos.z, pos.x - EnemyPos.x);
-			}
+			mAngle = -atan2f(pos.z - EnemyPos.z, pos.x - EnemyPos.x);
 
-			//弾を発射
-			//魔法使いでなければ
-			if (enemytype != ENEMY_TYPE::Witch)
-			{
-				pBulletManager->Shot(pos, EnemyPos, BULLET_TYPE::SLASHING, GetOffensivePower() + PowerUpLevel(), mLevel);
+			pBulletManager->Shot(pos, EnemyPos, BULLET_TYPE::SLASHING, GetOffensivePower() + PowerUpLevel(), mLevel);
 
-				//攻撃のSEの再生
-				soundmanager.SE_Run(SOUND_SE::SE_SLASHING, SE_RUN::PLAY);
-			}
+			//攻撃のSEの再生
+			soundmanager.SE_Run(SOUND_SE::SE_SLASHING, SE_RUN::PLAY);
 		}
 		else
 		{
@@ -286,46 +288,55 @@ void Swordfighter::AttackAnimation()
 	if (mAttackFlag == false)
 	{
 		mAttackMoveTimer = 0;
-
-		mLeftHandPos = Vector3(0.0f, -0.3f, 0.5f);
-		mRightHandPos = Vector3(0.0f, -0.3f, -0.5f);
-		mSwordAngle = 1.0f;
+		mNormal_animation_timer += 0.1f;
+		mLeftHandPos = mParam.mNormal_when_left_hand_coordinate;
+		mLeftHandPos.y = mParam.mNormal_when_left_hand_coordinate.y * static_cast<float>(sin(mNormal_animation_timer)*0.3f);
+		mRightHandPos = mParam.mNormal_when_right_hand_coordinate;
+		mRightHandPos.y = mParam.mNormal_when_right_hand_coordinate.y * static_cast<float>(sin(mNormal_animation_timer) * 0.3f);
+		mSwordAngle = mParam.mRotation_angle_in_normal_sword;
 	}
 	//攻撃時
 	else
 	{
+		DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+		//一時停止中なら戻る
+		if (mpDoubleSpeed.GetExecutionFlag() == false)return;
+
 		if (mAttackMoveTimer == 0)
 		{
-			mLeftHandPos = Vector3(-0.5f, 0.3f, 0.0f);
-			mRightHandPos = Vector3(-0.5f, 0.3f, 0.0f);
-			mSwordAngle = -0.2f;
+			mLeftHandPos = mParam.mLeft_hand_coordinate_at_attack_start;
+			mRightHandPos = mParam.mRight_hand_coordinate_at_attack_start;
+			mSwordAngle = mParam.mSword_rotation_angle_at_attack_start;
 		}
-		else if (mAttackMoveTimer < 15)
+		else if (mAttackMoveTimer < mParam.mAttack_animation_time)
 		{
-			mLeftHandPos.y -= 0.06f;
-			mRightHandPos.y -= 0.06f;
-			mSwordAngle += 0.1f;
+			mLeftHandPos -= mParam.mLeft_hand_move_at_attack;
+			mRightHandPos -= mParam.mRight_hand_move_at_attack;
+			mSwordAngle += mParam.mSword_rotation_at_attack;
 		}
 		else
 		{
 			mAttackFlag = false;
 		}
 
-		mAttackMoveTimer++;
+		if (mpDoubleSpeed.GetExecutionFlag() == true)
+			mAttackMoveTimer++;
 	}
 }
 
 //レベルアップにかかる時間
-const int& Swordfighter::LevelUpTime()
+const int Swordfighter::LevelUpTime()
 {
 	switch (mLevel)
 	{
-		case UNIT_LEVEL::LEVEL_2: {return LevelUpTime_Level_2; break; }
-		case UNIT_LEVEL::LEVEL_3: {return LevelUpTime_Level_3; break; }
-		case UNIT_LEVEL::LEVEL_4: {return LevelUpTime_Level_4; break; }
-		case UNIT_LEVEL::LEVEL_5: {return LevelUpTime_Level_5; break; }
+		case UNIT_LEVEL::LEVEL_2: {return mParam.mLevelUpTime_Level_2; break; }
+		case UNIT_LEVEL::LEVEL_3: {return mParam.mLevelUpTime_Level_3; break; }
+		case UNIT_LEVEL::LEVEL_4: {return mParam.mLevelUpTime_Level_4; break; }
+		case UNIT_LEVEL::LEVEL_5: {return mParam.mLevelUpTime_Level_5; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //攻撃力の設定
@@ -333,26 +344,30 @@ const int Swordfighter::GetOffensivePower()
 {
 	switch (mLevel)
 	{
-		case UNIT_LEVEL::LEVEL_1: {return 2; break; }
-		case UNIT_LEVEL::LEVEL_2: {return 4; break; }
-		case UNIT_LEVEL::LEVEL_3: {return 6; break; }
-		case UNIT_LEVEL::LEVEL_4: {return 8; break; }
-		case UNIT_LEVEL::LEVEL_5: {return 10; break; }
+		case UNIT_LEVEL::LEVEL_1: {return mParam.mAttack_power_when_level_1; break; }
+		case UNIT_LEVEL::LEVEL_2: {return mParam.mAttack_power_when_level_2; break; }
+		case UNIT_LEVEL::LEVEL_3: {return mParam.mAttack_power_when_level_3; break; }
+		case UNIT_LEVEL::LEVEL_4: {return mParam.mAttack_power_when_level_4; break; }
+		case UNIT_LEVEL::LEVEL_5: {return mParam.mAttack_power_when_level_5; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //パワーアップするレベル
-const int& Swordfighter::PowerUpLevel()
+const int Swordfighter::PowerUpLevel()
 {
 	switch (mPowerUpLevel)
 	{
-		case UNIT_LEVEL::LEVEL_1: {return 1; break; }
-		case UNIT_LEVEL::LEVEL_2: {return 2; break; }
-		case UNIT_LEVEL::LEVEL_3: {return 3; break; }
-		case UNIT_LEVEL::LEVEL_4: {return 4; break; }
-		case UNIT_LEVEL::LEVEL_5: {return 5; break; }
+		case UNIT_LEVEL::LEVEL_1: {return mParam.mAttack_power_ascend_in_power_up_1; break; }
+		case UNIT_LEVEL::LEVEL_2: {return mParam.mAttack_power_ascend_in_power_up_2; break; }
+		case UNIT_LEVEL::LEVEL_3: {return mParam.mAttack_power_ascend_in_power_up_3; break; }
+		case UNIT_LEVEL::LEVEL_4: {return mParam.mAttack_power_ascend_in_power_up_4; break; }
+		case UNIT_LEVEL::LEVEL_5: {return mParam.mAttack_power_ascend_in_power_up_5; break; }
 		case UNIT_LEVEL::NONE: {return 0; break; }
 		default:break;
 	}
+
+	return 0;
 }

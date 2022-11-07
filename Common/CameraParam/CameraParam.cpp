@@ -17,6 +17,6 @@ void CameraParam::SetParam(const VIEW& CameraView)
 	constexpr float fieldOfView = DirectX::XMConvertToRadians(45.0f);    // ‰æŠp
 	float aspectRatio = width / height;							// ‰æ–Êc‰¡”ä
 	float nearPlane = 1.0f;                                     // ƒJƒƒ‰‚©‚çˆê”Ô‹ß‚¢“Š‰e–Ê
-	float farPlane = 1000.0f;                                    // ƒJƒƒ‰‚©‚çˆê”Ô‰“‚¢“Š‰e–Ê
+	float farPlane = 10000.0f;                                    // ƒJƒƒ‰‚©‚çˆê”Ô‰“‚¢“Š‰e–Ê
 	mProjection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearPlane, farPlane);
 }

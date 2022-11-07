@@ -7,6 +7,15 @@
 #include"../DoubleSpeed/DoubleSpeed.h"
 #include"../ItemManager/ItemManager.h"
 
+#include"../UnitManager/Unit/Swordfighter/Swordfighter_Param.h"
+#include"../UnitManager/Unit/Archer/Archer_Param.h"
+#include"../UnitManager/Unit/Gunner/Gunner_Param.h"
+#include"../UnitManager/Unit/Cannon/Cannon_Param.h"
+
+#include"../GameUI/GameUI.h"
+
+#pragma warning(disable:26812)
+
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -24,7 +33,6 @@ Player::Player()
 	, mLife(10)
 	, mClear(false)
 	, mCameraView()
-	, mCameraHeight(10.0f)
 	, mMoney(200)
 	, mGameOver(false)
 	, mCapsule()
@@ -34,6 +42,13 @@ Player::Player()
 	, mTargetSize(1.0f)
 	, mItemType(ITEM_TYPE::NONE)
 	, mGoalPos()
+	, mpItemManager(nullptr)
+	, mSecondTarget()
+	, mFlag_of_whether_the_unit_can_be_put_out(true)
+	, mScrollMoney(200)
+	, mBlinking(0)
+	, mCameraView2()
+	, mpGameUI(nullptr)
 {
 
 }
@@ -46,15 +61,17 @@ Player::~Player()
 
 //初期化
 void Player::Initialize(
-	  StageRead* pStageRead
+	StageRead* pStageRead
 	, UnitManager* pUnitManager
 	, StageDraw* pStageDraw
 	, Player* pPlayer
-, ItemManager* pItemManager)
+	, ItemManager* pItemManager
+	, GameUI* pGameUI)
 {
 	//ポインタを取得
 	mpUnitManager = pUnitManager;
 	mpStageDraw = pStageDraw;
+	mpGameUI = pGameUI;
 
 	//ステージの横幅を取得
 	mHorizontal = pStageRead->GetHorizontal();
@@ -87,72 +104,92 @@ void Player::Initialize(
 	}
 
 	//カメラの座標の初期化
-	mCameraView.eyeX = static_cast<float>(mHorizontal * 0.5f);
-	mCameraView.eyeY = mCameraHeight;
-	mCameraView.eyeZ = static_cast<float>(mVertical * 0.5f) + 0.1f;
+	mCameraView2.eyeX = static_cast<float>(mHorizontal * mParam.mCamera_position_adjustment);
+	mCameraView2.eyeY = 25.0f;
+	mCameraView2.eyeZ = static_cast<float>(mVertical * mParam.mCamera_position_adjustment) + mParam.mDisplace_camera_little;
 
-	mCameraView.targetX = static_cast<float>(mHorizontal * 0.5f);
-	mCameraView.targetY = 0.0f;
-	mCameraView.targetZ = static_cast<float>(mVertical * 0.5f);
+	mCameraView.eyeX = static_cast<float>(mHorizontal * mParam.mCamera_position_adjustment);
+	mCameraView.eyeY = 25.0f;
+	mCameraView.eyeZ = static_cast<float>(mVertical * mParam.mCamera_position_adjustment) + mParam.mDisplace_camera_little;
 
-	SpawnUnit::Initialize(mpUnitManager, pPlayer);
+	mCameraView.targetX = static_cast<float>(mHorizontal * mParam.mCamera_position_adjustment);
+	mCameraView.targetY = mParam.mCamera_Target;
+	mCameraView.targetZ = static_cast<float>(mVertical * mParam.mCamera_position_adjustment);
+
+	SpawnUnit::Initialize(mpUnitManager, pPlayer,pGameUI);
 
 	DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
 
-	mpDoubleSpeed.SetSpeed(1.0f);
+	mpDoubleSpeed.SetSpeed(mParam.mGame_Speed);
 
 	InputManager& inputManager = InputManager::GetInstance();
 
 	inputManager.Reset();
+
+	mCameraView.eyeZ = mCameraView2.eyeZ + 100.0f;
+	mCameraView.eyeY = 200.0f;
 }
 
 //更新
 void Player::Update()
 {
-	DoubleSpeed& mpDoubleSpeed = DoubleSpeed::GetInstance();
+	InputManager& inputManager = InputManager::GetInstance();
 
-	if (mpDoubleSpeed.GetExecutionFlag() == true)
+	//ユニットをスポーン
+	if (mClear == false &&
+		mGameOver == false &&
+		mCameraMoveFlag == false)
 	{
-		//ユニットをスポーン
-		if (mClear == false &&
-			mGameOver == false &&
-			mCameraMoveFlag == false)
-		{
-			UnitSpawn();
-		}
-
-		if (mLife == 0)
-		{
-			mGameOver = true;
-		}
-
-		if (mUnitSpawnFlag == false)
-		{
-			//カメラの移動
-			CameraMove();
-
-			//マウスレイキャスト
-			MouseRayCast();
-		}
-
-		//Targetの大きさの拡縮
-		mTargetSize -= 0.005f;
-
-		//縮んだら元に戻す
-		if (mTargetSize < 0.8f)
-		{
-			mTargetSize = 1.0f;
-		}
-
-		//スピードアップ
-		SpeedUp();
-
-		//アイテムを使う
-		UseItem();
-
-		//アイテムを取得
-		GetItem();
+		UnitSpawn();
 	}
+
+	//ライフがゼロの時
+	const int life_zero(0);
+
+	if (mLife == life_zero)
+	{
+		mGameOver = true;
+	}
+
+	//マウスレイキャスト
+	if (inputManager.GetMouseState().x < 1300)
+		MouseRayCast();
+
+	//カメラの移動
+	CameraMove();
+
+	//Targetの大きさの拡縮
+	mTargetSize -= mParam.mTarget_Size;
+
+	//Targetの最小サイズ
+	const float minimum_Target_Size(0.8f);
+
+	//Targetの元のサイズ
+	const float target_Default_Size(1.0f);
+
+	//縮んだら元に戻す
+	if (mTargetSize < minimum_Target_Size)
+	{
+		mTargetSize = target_Default_Size;
+	}
+
+	if (mMoney < mScrollMoney)
+	{
+		mScrollMoney--;
+	}
+	else if (mMoney > mScrollMoney)
+	{
+		mScrollMoney++;
+	}
+
+	//スピードアップ
+	SpeedUp();
+
+	//アイテムを使う
+	UseItem();
+
+	//アイテムを取得
+	GetItem();
 
 	//一時停止
 	Pause();
@@ -170,25 +207,30 @@ void Player::Draw()
 	mWorld *= Matrix::CreateScale(mTargetSize);
 	mWorld *= Matrix::CreateTranslation(mPos);
 
-	//プレイヤーの位置の描画
+	if (mUnitSpawnFlag == true && mPos == mSecondTarget)
+	{
+		pObject.GetTexture3D()->SetColor(1.0f, 1.0f, 1.0f);
+	}
+
+	STAGE_DATA tiledata = mStageData[static_cast<int>(mPos.z)][static_cast<int>(mPos.x)];
+
+	pObject.GetTexture3D()->SetColor(0.0f, 1.0f, 1.0f,static_cast<float> (sin(mBlinking) * 0.5f + 0.5f) * 0.9f);
+
+	if (tiledata.tileData == TILE_DATA::Unit_Scaffolding)
+	{
+		mBlinking += 0.05f;
+
+		pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::ENEMY_HP);
+	}
+	else
+	{
+		mBlinking = 0.0f;
+	}
+
+	pObject.GetTexture3D()->SetColor();
 	pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::TARGET);
 
-	int x = mLife;
-	float posx = mGoalPos.x+0.2f;
-	for (int i = 0; i < 2; i++)
-	{
-		int a = 0;
-
-		a = x % 10;
-		mWorld = Matrix::Identity;
-		mWorld *= Matrix::CreateRotationY(3.14f);
-		mWorld *= Matrix::CreateRotationX(-1.57f);
-		mWorld *= Matrix::CreateTranslation(posx, mGoalPos.y+0.7f, mGoalPos.z);
-		pObject.GetTexture3D()->SetColor(1.0f, 1.0f, 1.0f);
-		NumDraw(a);
-		posx -= 0.3f;
-		x /= 10;
-	}
+	Drawing_the_attack_range_of_the_unit();
 }
 
 //ダメージを受ける
@@ -212,14 +254,54 @@ void Player::CameraMove()
 {
 	InputManager& inputManager = InputManager::GetInstance();
 
-	//カメラのズーム
-	if (16000 > abs(inputManager.GetMouseState().scrollWheelValue))
-		mCameraView.eyeY = inputManager.GetMouseState().scrollWheelValue * -0.005;
+	//真上視点のカメラの高さ
+	float Top_view_camera_height = 22.0f;
+
+	//斜め視点のカメラの高さ
+	float Oblique_view_camera_height = 13.5f;
+
+	//カメラを引いた座標
+	float Coordinates_minus_the_camera=12.0f;
+
+	if (inputManager.GetButtonStateTracker()->rightButton == inputManager.GetButtonStateTracker()->PRESSED &&
+		mCameraView2.eyeY != Oblique_view_camera_height)
+	{
+		mCameraView2.eyeZ = mCameraView2.eyeZ + Coordinates_minus_the_camera;
+		mCameraView2.eyeY = Oblique_view_camera_height;
+	}
+	else if (inputManager.GetButtonStateTracker()->rightButton == inputManager.GetButtonStateTracker()->PRESSED &&
+		mCameraView2.eyeY == Oblique_view_camera_height)
+	{
+		mCameraView2.eyeZ = mCameraView2.eyeZ - Coordinates_minus_the_camera;
+		mCameraView2.eyeY = Top_view_camera_height;
+	}
+	else if(mCameraView.eyeY == 200.0f)
+	{
+		mCameraView2.eyeZ = mCameraView2.eyeZ + Coordinates_minus_the_camera;
+		mCameraView2.eyeY = Oblique_view_camera_height;
+	}
+
+	Vector3 pos = Vector3(mCameraView.eyeX, mCameraView.eyeY, mCameraView.eyeZ);
+
+	pos += (Vector3(mCameraView2.eyeX, mCameraView2.eyeY, mCameraView2.eyeZ)- pos) * 0.035f;
+
+	mCameraView.eyeX = pos.x;
+	mCameraView.eyeY = pos.y;
+	mCameraView.eyeZ = pos.z;
+
+	//マウスホイールの回転のリセット
+	if (inputManager.GetMouseState().scrollWheelValue < -481 ||
+		inputManager.GetMouseState().scrollWheelValue > 481)
+	{
+		inputManager.Reset();
+	}
 }
 
 //Unitをスポーン
 void Player::UnitSpawn()
 {
+	if (mFlag_of_whether_the_unit_can_be_put_out == false)return;
+
 	InputManager& inputManager = InputManager::GetInstance();
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
@@ -237,7 +319,7 @@ void Player::UnitSpawn()
 }
 
 //スクリーン座標をワールド座標に変換する行列を作成する関数 
-const Matrix& Player::CreateMatrix_Screen2World()
+const Matrix Player::CreateMatrix_Screen2World()
 {
 	CameraParam& pCm = CameraParam::GetInstance();
 
@@ -284,11 +366,22 @@ void Player::MouseRayCast()
 	mouseEnd = Vector3::Transform(mouseEnd, screen2WorldMatrix);
 
 	//Capsuleの当たり判定
-	mCapsule.a = mouseStart;
-	mCapsule.b = mouseEnd;
+	mCapsule.mStart = mouseStart;
+	mCapsule.mEnd = mouseEnd;
+
+	Plane plane = Plane(0.0f, 1.0f, 0.0f, 0.0f);
+
+	Vector3 intersection = IntersectPlaneAndLine(mouseStart, mouseEnd, plane);
 
 	//ステージのブロックとマウスとの当たり判定
-	mPos = mpStageDraw->ObjectCollision(mCapsule);
+	if (mUnitSpawnFlag == false)
+	{
+		mPos = mpStageDraw->ObjectCollision(intersection);
+	}
+	else
+	{
+		mSecondTarget = mpStageDraw->ObjectCollision(intersection);
+	}
 }
 
 //初期化時のステージデータの設定
@@ -329,10 +422,10 @@ void Player::SpeedUp()
 	InputManager& inputManager = InputManager::GetInstance();
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
-	if (1400-30 <= inputManager.GetMouseState().x &&//縮小
-		1400+30 >= inputManager.GetMouseState().x &&
-		850-30 <= inputManager.GetMouseState().y &&
-		850+30 >= inputManager.GetMouseState().y &&
+	if (1370 <= inputManager.GetMouseState().x &&//縮小
+		1430 >= inputManager.GetMouseState().x &&
+		820 <= inputManager.GetMouseState().y &&
+		880 >= inputManager.GetMouseState().y &&
 		inputManager.GetButtonStateTracker()->leftButton == inputManager.GetButtonStateTracker()->PRESSED)
 	{
 		if (mpDoubleSpeed.GetSpeed() == 1.0f)
@@ -360,10 +453,10 @@ void Player::Pause()
 	InputManager& inputManager = InputManager::GetInstance();
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
-	if (1500-30 <= inputManager.GetMouseState().x &&//縮小
-		1500+30 >= inputManager.GetMouseState().x &&
-		850-30 <= inputManager.GetMouseState().y &&
-		850+30 >= inputManager.GetMouseState().y &&
+	if (1470 <= inputManager.GetMouseState().x &&//縮小
+		1530 >= inputManager.GetMouseState().x &&
+		820 <= inputManager.GetMouseState().y &&
+		880 >= inputManager.GetMouseState().y &&
 		inputManager.GetButtonStateTracker()->leftButton == inputManager.GetButtonStateTracker()->PRESSED)
 	{
 		if (mpDoubleSpeed.GetExecutionFlag() == true)
@@ -421,21 +514,137 @@ void Player::UseItem()
 	}
 }
 
-void Player::NumDraw(const int& num)
+//線分ABと平面の交点を計算する
+const Vector3 Player::IntersectPlaneAndLine(
+	const Vector3& A,   //線分始点
+	const Vector3& B,   //線分終点
+	const Plane& PL) //平面
+{
+	//平面上の点P
+	Vector3 P = Vector3(PL.x * PL.w, PL.y * PL.w, PL.z * PL.w);
+
+	//PA PBベクトル
+	Vector3 PA = Vector3(P.x - A.x, P.y - A.y, P.z - A.z);
+	Vector3 PB = Vector3(P.x - B.x, P.y - B.y, P.z - B.z);
+
+	//PA PBそれぞれを平面法線と内積
+	float dot_PA = static_cast<float>(PA.x * PL.x + PA.y * PL.y + PA.z * PL.z);
+	float dot_PB = static_cast<float>(PB.x * PL.x + PB.y * PL.y + PB.z * PL.z);
+
+	//これは線端が平面上にあった時の計算の誤差を吸収しています。調整して使ってください。
+	if (abs(dot_PA) < 0.000001f) { dot_PA = 0.0f; }
+	if (abs(dot_PB) < 0.000001f) { dot_PB = 0.0f; }
+
+	//以下、交点を求める 
+
+	Vector3 AB = Vector3(B.x - A.x, B.y - A.y, B.z - A.z);
+
+	//交点とAの距離 : 交点とBの距離 = dot_PA : dot_PB
+	float hiritu = abs(dot_PA) / (abs(dot_PA) + abs(dot_PB));
+
+	return Vector3(A.x + (AB.x * hiritu), A.y + (AB.y * hiritu), A.z + (AB.z * hiritu));
+}
+
+//Targetが重なっているとき
+const bool Player::Stage_Target_Duplicate()
+{
+	if (mPos == mSecondTarget)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//ユニットの攻撃範囲の描画
+void Player::Drawing_the_attack_range_of_the_unit()
 {
 	DrawManager& pObject = DrawManager::GetInstance();
-	switch (num)
+
+	//ステージデータの取得
+	STAGE_DATA tiledata = mStageData[static_cast<int>(mPos.z)][static_cast<int>(mPos.x)];
+
+	Matrix world = Matrix::Identity;
+
+	if (tiledata.tileData == TILE_DATA::Swordfighter)
 	{
-		case 0: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM0); break; }
-		case 1: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM1); break; }
-		case 2: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM2); break; }
-		case 3: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM3); break; }
-		case 4: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM4); break; }
-		case 5: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM5); break; }
-		case 6: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM6); break; }
-		case 7: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM7); break; }
-		case 8: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM8); break; }
-		case 9: {pObject.GetTexture3D()->DrawShader(mWorld, TEXTURE3D::NUM9); break; }
-		default:break;
+		Swordfighter_Param swordfighter_Param;
+		world = Matrix::CreateScale(swordfighter_Param.mAttack_range * 2.0f);
 	}
+	else if (tiledata.tileData == TILE_DATA::Archer)
+	{
+		Archer_Param archer_Param;
+		world = Matrix::CreateScale(archer_Param.mAttack_range * 2.0f);
+	}
+	else if (tiledata.tileData == TILE_DATA::Gunner)
+	{
+		Gunner_Param gunner_Param;
+		world = Matrix::CreateScale(gunner_Param.mAttack_range * 2.0f);
+	}
+	else if (tiledata.tileData == TILE_DATA::Cannon)
+	{
+		Cannon_Param cannon_Param;
+		world = Matrix::CreateScale(cannon_Param.mAttack_range * 2.0f);
+	}
+	else
+	{
+		InputManager& inputManager = InputManager::GetInstance();
+
+		if (GetUnitSelectFlag() == true)
+		{
+			if (mpGameUI->Summon_Unit_Button(UNIT_TYPE::SWORDFIGHTER)->When_the_mouse_cursor_enters_the_range() == true)
+			{
+				Swordfighter_Param swordfighter_Param;
+				world = Matrix::CreateScale(swordfighter_Param.mAttack_range * 2.0f);
+			}
+			else if (mpGameUI->Summon_Unit_Button(UNIT_TYPE::ARCHER)->When_the_mouse_cursor_enters_the_range() == true)
+			{
+				Archer_Param archer_Param;
+				world = Matrix::CreateScale(archer_Param.mAttack_range * 2.0f);
+			}
+			else if (mpGameUI->Summon_Unit_Button(UNIT_TYPE::GUNNER)->When_the_mouse_cursor_enters_the_range() == true)
+			{
+				Gunner_Param gunner_Param;
+				world = Matrix::CreateScale(gunner_Param.mAttack_range * 2.0f);
+			}
+			else if (mpGameUI->Summon_Unit_Button(UNIT_TYPE::CANNON)->When_the_mouse_cursor_enters_the_range() == true)
+			{
+				Cannon_Param cannon_Param;
+				world = Matrix::CreateScale(cannon_Param.mAttack_range * 2.0f);
+			}
+			else if (inputManager.GetMouseState().scrollWheelValue == 0)
+			{
+				Swordfighter_Param swordfighter_Param;
+				world = Matrix::CreateScale(swordfighter_Param.mAttack_range * 2.0f);
+			}
+			else if (inputManager.GetMouseState().scrollWheelValue == -120 ||
+				inputManager.GetMouseState().scrollWheelValue == 480)
+			{
+				Archer_Param archer_Param;
+				world = Matrix::CreateScale(archer_Param.mAttack_range * 2.0f);
+			}
+			else if (inputManager.GetMouseState().scrollWheelValue == -240 || 
+				inputManager.GetMouseState().scrollWheelValue == 360)
+			{
+				Gunner_Param gunner_Param;
+				world = Matrix::CreateScale(gunner_Param.mAttack_range * 2.0f);
+			}
+			else if (inputManager.GetMouseState().scrollWheelValue == -360 || 
+				inputManager.GetMouseState().scrollWheelValue == 240)
+			{
+				Cannon_Param cannon_Param;
+				world = Matrix::CreateScale(cannon_Param.mAttack_range * 2.0f);
+			}
+			else
+				return;
+		}
+		else
+			return;
+	}
+
+	world *= Matrix::CreateRotationX(XMConvertToRadians(90.0f));
+	world *= Matrix::CreateTranslation(Vector3(mPos.x, mPos.y + 0.5f, mPos.z));
+
+	pObject.GetTexture3D()->SetColor(0.3f,0.3f,1.0f,0.8f);
+	pObject.GetTexture3D()->DrawShader(world, TEXTURE3D::RANGE);
 }

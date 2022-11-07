@@ -4,7 +4,7 @@
 #include<WICTextureLoader.h>
 
 #include"ResourceGeometry/ResourceGeometry.h"
-#include"ResourceModel/ResourceModel.h"
+
 #include"Resource_2D_Texture/Resource_2D_Texture.h"
 #include"Resource_3D_Texture/Resource_3D_Texture.h"
 #include"ResourceSound/ResourceSound.h"
@@ -69,14 +69,14 @@ const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& ResourceManager::Get3DTe
 }
 
 //サウンドの番号を返す
-const int& ResourceManager::GetBGM(
+const int ResourceManager::GetBGM(
 	const SOUND_BGM& sound)
 {
 	return mpResourceSound->GetBGM(sound);
 }
 
 //サウンドの取得
-const int& ResourceManager::GetSE(
+const int ResourceManager::GetSE(
 	const SOUND_SE& sound)
 {
 	return mpResourceSound->GetSE(sound);

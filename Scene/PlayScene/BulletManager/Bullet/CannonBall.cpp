@@ -7,6 +7,7 @@ using namespace DirectX::SimpleMath;
 //コンストラクタ
 CannonBall::CannonBall()
 	:mOffensivePower(0)
+	,mLevel()
 {
 
 }
@@ -20,6 +21,8 @@ CannonBall::~CannonBall()
 //発射
 void CannonBall::Shot(const int& power, const float& angle, const DirectX::SimpleMath::Color& color, const UNIT_LEVEL& level)
 {
+	UNREFERENCED_PARAMETER(color);
+	UNREFERENCED_PARAMETER(angle);
 	mOffensivePower = power;
 	mLevel = level;
 }

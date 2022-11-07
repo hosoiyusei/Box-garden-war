@@ -86,6 +86,8 @@ void Bullet::Shot(
 
 	mPos = pos;
 
+	mCollision.mPos = pos;
+
 	mInitialPos = pos;
 
 	float angle = atan2f(
@@ -100,8 +102,10 @@ void Bullet::Shot(
 	mActive = true;
 }
 
-const int& Bullet::Hit()
+const int Bullet::Hit()
 {
+	mActive = false;
+
 	if (mpBulletType->GetType() == BULLET_TYPE::CANNONBALL)
 	{
 		mpEffectManager->Play(mPos, Vector3(1.0f, 0.0f, 0.0f), 10, TEXTURE3D::SHADOW);
@@ -109,12 +113,11 @@ const int& Bullet::Hit()
 		mpEffectManager->Play(mPos, Vector3(0.5f, 0.5f, 0.5f), 20, TEXTURE3D::SHADOW, 0.003f, 0.1f);
 	}
 
-	mActive = false;
 
 	return mpBulletType->GetOffensivePower();
 }
 
-const UNIT_LEVEL& Bullet::GetLevel()
+const UNIT_LEVEL Bullet::GetLevel()
 {
 	return mpBulletType->GetLevel();
 }

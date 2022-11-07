@@ -61,11 +61,10 @@ void Boss::Update()
 
 //描画
 void Boss::Draw(const Vector3& pos
-	, const float& angle)
+	, const float& angle, const float& fade)
 {
-	DrawManager& pObject = DrawManager::GetInstance();
-
-	//pObject.GetGeometry()->Draw(world, SHAPE::Sphere, Colors::Red);
+	UNREFERENCED_PARAMETER(pos);
+	UNREFERENCED_PARAMETER(angle);
 }
 
 //エフェクトの描画
@@ -94,9 +93,10 @@ void Boss::EffectDraw(const Vector3& pos)
 }
 
 //Damageの処理
-const bool& Boss::Damage(const DirectX::SimpleMath::Vector3& pos
+const bool Boss::Damage(const DirectX::SimpleMath::Vector3& pos
 	, const int& damage, const BULLET_TYPE& type, const UNIT_LEVEL& level)
 {
+	UNREFERENCED_PARAMETER(level);
 	SoundManager& soundmanager = SoundManager::GetInstance();
 
 	//Enemyが無敵でないなら
@@ -137,7 +137,7 @@ void Boss::SlowFoot()
 }
 
 //HPの設定
-const int& Boss::SetHP()
+const int Boss::SetHP()
 {
 	switch (mLevel)
 	{
@@ -148,10 +148,12 @@ const int& Boss::SetHP()
 		case ENEMY_LEVEL::LEVEL5: { return 100; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //金
-const int& Boss::GetMoney()
+const int Boss::GetMoney()
 {
 	switch (mLevel)
 	{
@@ -162,4 +164,6 @@ const int& Boss::GetMoney()
 		case ENEMY_LEVEL::LEVEL5: {return 11; break; }
 		default:break;
 	}
+
+	return 0;
 }

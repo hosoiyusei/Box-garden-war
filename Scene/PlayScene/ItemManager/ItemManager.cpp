@@ -36,7 +36,7 @@ void ItemManager::Initialize(Player* pPlayer)
 //çXêV
 void ItemManager::Update()
 {
-	for (int i = 0; i < mpItem.size(); i++)
+	for (size_t i = 0; i < mpItem.size(); i++)
 	{
 		if (mpItem[i]->GetActive() == true)
 		{
@@ -48,7 +48,7 @@ void ItemManager::Update()
 //ï`âÊ
 void ItemManager::Draw()
 {
-	for (int i = 0; i < mpItem.size(); i++)
+	for (size_t i = 0; i < mpItem.size(); i++)
 	{
 		if (mpItem[i]->GetActive() == true)
 		{
@@ -60,7 +60,7 @@ void ItemManager::Draw()
 //Spawn
 void ItemManager::Spawn(const Vector3& pos)
 {
-	for (int i = 0; i < mpItem.size(); i++)
+	for (size_t i = 0; i < mpItem.size(); i++)
 	{
 		if (mpItem[i]->GetActive() == false)
 		{
@@ -73,7 +73,7 @@ void ItemManager::Spawn(const Vector3& pos)
 //CapsuleÇÃìñÇΩÇËîªíËÇï‘Ç∑
 void ItemManager::CheckHitCapsule(const Capsule& capsule)
 {
-	for (int i = 0; i < mpItem.size(); i++)
+	for (size_t i = 0; i < mpItem.size(); i++)
 	{
 		if (mpItem[i]->GetActive() == true&&mpItem[i]->GetUseFlag()==false)
 		{
@@ -85,7 +85,7 @@ void ItemManager::CheckHitCapsule(const Capsule& capsule)
 
 void ItemManager::Use(const DirectX::SimpleMath::Vector3& pos, const ITEM_TYPE& type)
 {
-	for (int i = 0; i < mpItem.size(); i++)
+	for (size_t i = 0; i < mpItem.size(); i++)
 	{
 		if (mpItem[i]->GetActive() == false && mpItem[i]->GetUseFlag() == false)
 		{
@@ -97,7 +97,7 @@ void ItemManager::Use(const DirectX::SimpleMath::Vector3& pos, const ITEM_TYPE& 
 
 void ItemManager::CheckHitCollision(Enemy* pEnemy)
 {
-	for (int i = 0; i < mpItem.size(); i++)
+	for (size_t i = 0; i < mpItem.size(); i++)
 	{
 		if (mpItem[i]->GetActive() == true)
 		{

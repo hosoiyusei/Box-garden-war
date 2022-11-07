@@ -45,6 +45,6 @@ public:
 		, DirectX::SimpleMath::Color color = DirectX::SimpleMath::Color(0.0f, 0.0f, 0.0f));
 
 	//’e‚Ì“–‚½‚è”»’è
-	bool CheckHitCollision(
+	void CheckHitCollision(
 		Enemy* pEnemy);
 };

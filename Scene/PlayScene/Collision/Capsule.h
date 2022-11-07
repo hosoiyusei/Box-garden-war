@@ -4,18 +4,26 @@
 // カプセルの構造体
 struct Capsule
 {
-	DirectX::SimpleMath::Vector3 a; // 中間部の線分の開始点
-	DirectX::SimpleMath::Vector3 b; // 中間部の線分の終了点
+	DirectX::SimpleMath::Vector3 mStart; // 中間部の線分の開始点
+	DirectX::SimpleMath::Vector3 mEnd; // 中間部の線分の終了点
 
-	float r; // 半径
+	float mRadius; // 半径
+
+	Capsule()
+		:mStart()
+		, mEnd()
+		, mRadius()
+	{
+
+	}
 
 	// カプセルとカプセルの衝突判定関数
-	const bool& HitCheck_Capsule2Capsule(
+	const bool HitCheck_Capsule2Capsule(
 		  const Capsule& capsule1
 		, const Capsule& capsule2);
 
 	// クランプ関数
-	const float& Clamp(
+	const float Clamp(
 		  const float& n
 		, const float& min
 		, const float& max);
@@ -26,7 +34,7 @@ struct Capsule
 	// s: 線分１上の最短位置を表す係数 t: 線分2上の最短位置を表す係数
 	// c1: 線分１上の最短距離の位置 c2: 線分2上の最短距離の位置
 	// 返り値: ２つの線分の最短距離の平方
-	const float& ClosestPtSegmentSegment(
+	const float ClosestPtSegmentSegment(
 		  const DirectX::SimpleMath::Vector3& p1
 		, const DirectX::SimpleMath::Vector3& q1
 		, const DirectX::SimpleMath::Vector3& p2

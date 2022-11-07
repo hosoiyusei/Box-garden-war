@@ -73,22 +73,31 @@ public:
 	void Delete();
 
 	//強化中のフラグを返す
-	const bool& GetReinforcementFlag();
+	const bool GetReinforcementFlag();
 
 	//当たり判定を返す
-	const SphereCollision& GetCollision();
+	const SphereCollision GetCollision();
 
 	//Unitの種類を返す
-	const UNIT_TYPE& GetUnitType() { return mType; }
+	const UNIT_TYPE GetUnitType() { return mType; }
 
 	//Unitのレベルを返す
-	const UNIT_LEVEL& GetUnitLevel() { return mLevel; }
+	const UNIT_LEVEL GetUnitLevel() { return mLevel; }
 
 	//Unitのパワーアップ
 	void PowerUp(const SphereCollision& GetCollision,const UNIT_LEVEL& level);
+
+	//パワーアップの解除
+	void Release_power_ups();
+
+	//攻撃力
+	const int GetPower();
 
 private:
 
 	//状態の設定
 	void SetType(const UNIT_TYPE& type);
+
+	//エフェクトの色の設定
+	const DirectX::SimpleMath::Vector3 GetEffectColor();
 };

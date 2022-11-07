@@ -24,13 +24,14 @@ TitleScene::~TitleScene()
 void TitleScene::Initialize()
 {
 	mpTitleUI = std::make_unique<TitleUI>();
+
+	mpTitleUI->Initialize();
 }
 
 //XV
 GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 {
-	timer;//Œxœ‚¯
-	InputManager& inputManager = InputManager::GetInstance();
+	UNREFERENCED_PARAMETER(timer);//Œxœ‚¯
 	Volume& pVolume = Volume::GetInstance();
 	SoundManager& soundmanager = SoundManager::GetInstance();
 

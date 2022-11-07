@@ -10,7 +10,7 @@ private:
 	//レベル
 	ENEMY_LEVEL mLevel;
 
-	DirectX::SimpleMath::Vector3 mPos;
+	DirectX::SimpleMath::Vector3 mPos,mPos2;
 
 	//手の位置
 	DirectX::SimpleMath::Vector3 mRightHandPos
@@ -56,7 +56,7 @@ public:
 	void Spawn(EffectManager* pEffectManager, Player* pPlayer, const ENEMY_LEVEL& level)override;
 
 	//移動の速さ
-	const float& Speed()override { return mSpeed; }
+	const float Speed()override { return mSpeed; }
 
 	//エフェクトの色の設定
 	const DirectX::SimpleMath::Vector3 GetEffectColor()override;
@@ -65,16 +65,16 @@ public:
 	void Update()override;
 
 	//描画
-	void Draw(const DirectX::SimpleMath::Vector3& pos, const float& angle)override;
+	void Draw(const DirectX::SimpleMath::Vector3& pos, const float& angle, const float& fade = 1.0f)override;
 
 	//エフェクトの描画
 	void EffectDraw(const DirectX::SimpleMath::Vector3& pos)override;
 
 	//ダメージを受ける
-	const bool& Damage(const DirectX::SimpleMath::Vector3& pos, const int& damage, const BULLET_TYPE& type, const UNIT_LEVEL& level)override;
+	const bool Damage(const DirectX::SimpleMath::Vector3& pos, const int& damage, const BULLET_TYPE& type, const UNIT_LEVEL& level)override;
 
 	//死んでいるかどうか
-	const bool& Whetherdead();
+	const bool Whetherdead();
 
 private:
 
@@ -85,10 +85,10 @@ private:
 	void Combustion();
 
 	//HPの設定
-	const int& SetHP();
+	const int SetHP();
 
 	//金
-	const int& GetMoney();
+	const int GetMoney();
 
 	//状態ごとの処理
 	void Processingofeachstate();

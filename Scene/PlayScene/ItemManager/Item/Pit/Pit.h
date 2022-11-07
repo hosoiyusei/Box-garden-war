@@ -37,13 +37,13 @@ public:
 	void Spawn(const DirectX::SimpleMath::Vector3 & pos) override;
 
 	//Capsule‚Ì“–‚½‚è”»’è‚ð•Ô‚·
-	const bool&  CheckHitCapsule(const Capsule& capsule)override ;
+	const bool  CheckHitCapsule(const Capsule& capsule)override ;
 
 	void Use(const DirectX::SimpleMath::Vector3& pos)override;
 
 	const SphereCollision& GetCollision() { return mSphereCollision; }
 
-	const bool& GetUseFlag()override { return mUse; }
+	const bool GetUseFlag()override { return mUse; }
 
 	void SetUseFlag()override { mUse = false; }
 };

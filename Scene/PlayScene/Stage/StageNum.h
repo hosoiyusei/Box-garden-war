@@ -38,5 +38,9 @@ public:
 		{
 			stage = STAGE_NUM::STAGE_3;
 		}
+		else if (stagenum == 4)
+		{
+			stage = STAGE_NUM::TUTORIAL;
+		}
 	}
 };

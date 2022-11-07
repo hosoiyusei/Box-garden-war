@@ -9,7 +9,7 @@ void ResourceSound::Read_Sound()
 }
 
 //ƒTƒEƒ“ƒh‚Ì”Ô†‚ğ•Ô‚·
-const int& ResourceSound::GetBGM(
+const int ResourceSound::GetBGM(
 	const SOUND_BGM& sound)
 {
 	switch (sound)
@@ -22,7 +22,7 @@ const int& ResourceSound::GetBGM(
 	return 0;
 }
 
-const int& ResourceSound::GetSE(
+const int ResourceSound::GetSE(
 	const SOUND_SE& sound)
 {
 	switch (sound)

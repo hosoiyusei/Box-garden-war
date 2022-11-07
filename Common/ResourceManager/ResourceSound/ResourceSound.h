@@ -17,10 +17,10 @@ public:
 	void Read_Sound();
 
 	//サウンドの取得
-	const int& GetBGM(
+	const int GetBGM(
 		const SOUND_BGM& sound);
 
-	const int& GetSE(
+	const int GetSE(
 		const SOUND_SE& sound);
 
 	//サウンドの名前を取得

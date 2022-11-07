@@ -24,10 +24,11 @@ Ninja::Ninja()
 	, mEnemy_Status2(Enemy_Status::generally)
 	, mCombustionTimer(0)
 	, mPos()
-	,mLeftHandPos()
-	,mRightHandPos()
-	,mHandAngle(0.0f)
+	, mLeftHandPos()
+	, mRightHandPos()
+	, mHandAngle(0.0f)
 	, mDisappearTimer(0)
+	, Body_transparency(1.0f)
 {
 
 }
@@ -52,17 +53,19 @@ void Ninja::Spawn(EffectManager* pEffectManager, Player* pPlayer, const ENEMY_LE
 }
 
 //ƒGƒtƒFƒNƒg‚ÌF‚Ìİ’è
-const DirectX::SimpleMath::Vector3 Ninja::GetEffectColor()
+const Vector3 Ninja::GetEffectColor()
 {
 	switch (mLevel)
 	{
-		case ENEMY_LEVEL::LEVEL1: {return DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f); break; }
-		case ENEMY_LEVEL::LEVEL2: {return DirectX::SimpleMath::Vector3(1.0f, 1.0f, 0.0f); break; }
-		case ENEMY_LEVEL::LEVEL3: {return DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f); break; }
-		case ENEMY_LEVEL::LEVEL4: {return DirectX::SimpleMath::Vector3(0.0f, 1.0f, 1.0f); break; }
-		case ENEMY_LEVEL::LEVEL5: {return DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f); break; }
+		case ENEMY_LEVEL::LEVEL1: {return Vector3(1.0f, 0.0f, 0.0f); break; }
+		case ENEMY_LEVEL::LEVEL2: {return Vector3(1.0f, 1.0f, 0.0f); break; }
+		case ENEMY_LEVEL::LEVEL3: {return Vector3(1.0f, 0.0f, 1.0f); break; }
+		case ENEMY_LEVEL::LEVEL4: {return Vector3(0.0f, 1.0f, 1.0f); break; }
+		case ENEMY_LEVEL::LEVEL5: {return Vector3(0.0f, 1.0f, 0.0f); break; }
 		default:break;
 	}
+
+	return Vector3();
 }
 
 //XV
@@ -75,9 +78,19 @@ void Ninja::Update()
 		mDisappearTimer++;
 	}
 
-	if (mDisappearTimer >= 120)
+	if (mDisappearTimer >= 180)
 	{
 		mDisappearTimer = 0;
+	}
+
+	//‘Ì‚ğ”–‚­‚·‚é
+	if (mDisappearTimer < 90 && Body_transparency > 0.1f)
+	{
+		Body_transparency -= 0.03f;
+	}
+	else if (Body_transparency < 1.0f)
+	{
+		Body_transparency += 0.03f;
 	}
 
 	mLeftHandPos = Vector3(0.0f, -0.3f, 0.5f);
@@ -89,9 +102,9 @@ void Ninja::Update()
 
 //•`‰æ
 void Ninja::Draw(const Vector3& pos
-	, const float& angle)
+	, const float& angle, const float& fade)
 {
-	if (mDisappearTimer > 60)
+	if (mDisappearTimer > 90)
 	{
 		DrawManager& pObject = DrawManager::GetInstance();
 
@@ -105,16 +118,21 @@ void Ninja::Draw(const Vector3& pos
 		//“·
 		body = Matrix::CreateScale(0.8f);
 		body *= Matrix::CreateRotationY(angle);
-		body *= Matrix::CreateTranslation(pos);
+		if (mHP == 0)
+		{
+			body *= Matrix::CreateRotationX(angle);
+			body *= Matrix::CreateRotationZ(angle);
+		}
+		body *= Matrix::CreateTranslation(pos.x, pos.y-0.5f, pos.z);
 
-		pObject.GetGeometry()->DrawSetColor(body, SHAPE::CONE, Color(GetEffectColor()));
+		pObject.GetGeometry()->DrawSetColor(body, SHAPE::CONE, Color(GetEffectColor() * Body_transparency)* fade);
 
 		//“ª
 		head = Matrix::CreateScale(0.5f);
 		head *= Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
 		head *= body;
 
-		pObject.GetGeometry()->Draw(head, SHAPE::SPHERE, Color(GetEffectColor()));
+		pObject.GetGeometry()->Draw(head, SHAPE::SPHERE, Color(GetEffectColor() * Body_transparency)* fade);
 
 		//‰Eè
 		rightHand = Matrix::CreateScale(0.3f);
@@ -122,7 +140,7 @@ void Ninja::Draw(const Vector3& pos
 		rightHand *= Matrix::CreateRotationZ(XMConvertToRadians(static_cast<float>(sin(mHandAngle) * 50.0f)));
 		rightHand *= body;
 
-		pObject.GetGeometry()->Draw(rightHand, SHAPE::SPHERE, Colors::BurlyWood);
+		pObject.GetGeometry()->Draw(rightHand, SHAPE::SPHERE, Colors::BurlyWood * Body_transparency* fade);
 
 		//¶è
 		leftHand = Matrix::CreateScale(0.3f);
@@ -130,7 +148,7 @@ void Ninja::Draw(const Vector3& pos
 		leftHand *= Matrix::CreateRotationZ(XMConvertToRadians(static_cast<float>(-sin(mHandAngle) * 50.0f)));
 		leftHand *= body;
 
-		pObject.GetGeometry()->Draw(leftHand, SHAPE::SPHERE, Colors::BurlyWood);
+		pObject.GetGeometry()->Draw(leftHand, SHAPE::SPHERE, Colors::BurlyWood * Body_transparency* fade);
 	}
 }
 
@@ -144,7 +162,8 @@ void Ninja::EffectDraw(const Vector3& pos)
 	Matrix world = Matrix::Identity;
 	world *= Matrix::CreateScale(1.0f);
 	world *= Matrix::CreateRotationX(-1.57f);
-	world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y - 0.4f, pos.z));
+	world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y - 0.99f, pos.z));
+	pObject.GetTexture3D()->SetColor(0.0f, 0.0f, 0.0f, Body_transparency);
 	pObject.GetTexture3D()->DrawShader(world, TEXTURE3D::SHADOW);
 
 
@@ -154,7 +173,7 @@ void Ninja::EffectDraw(const Vector3& pos)
 	world = Matrix::Identity;
 	pObject.GetTexture3D()->DrawBillboard(world);
 	world *= Matrix::CreateScale((static_cast<float>(mHP) / static_cast<float>(SetHP())), 0.1f, 0.1f);
-	world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y + 0.8f, pos.z - 0.3f));
+	world *= Matrix::CreateTranslation(Vector3(pos.x, pos.y, pos.z - 0.3f));
 
 	pObject.GetTexture3D()->DrawShader(world, TEXTURE3D::ENEMY_HP);
 
@@ -176,50 +195,18 @@ void Ninja::EffectDraw(const Vector3& pos)
 }
 
 //Damage‚Ìˆ—
-const bool& Ninja::Damage(const DirectX::SimpleMath::Vector3& pos
+const bool Ninja::Damage(const DirectX::SimpleMath::Vector3& pos
 	, const int& damage, const BULLET_TYPE& type, const UNIT_LEVEL& level)
 {
-	if (mDisappearTimer < 60)
-	{
-		SoundManager& soundmanager = SoundManager::GetInstance();
+	UNREFERENCED_PARAMETER(level);
+	SoundManager& soundmanager = SoundManager::GetInstance();
 
+	if (BULLET_TYPE::SHOOTING == type)
+	{
 		int Damage = damage;
 		//Enemy‚ª–³“G‚Å‚È‚¢‚È‚ç
 		mHP -= Damage;
 		soundmanager.SE_Run(SOUND_SE::SE_DAMAGE, SE_RUN::PLAY);
-
-		//“–‚½‚Á‚½UŒ‚‚ªŒ•‚¾‚Á‚½‚ç
-		if (level == UNIT_LEVEL::LEVEL_3 || level == UNIT_LEVEL::LEVEL_4 || level == UNIT_LEVEL::LEVEL_5)
-		{
-			if (mEnemy_Status == Enemy_Status::generally)
-			{
-				if (type == BULLET_TYPE::SLASHING)
-				{
-					mEnemy_Status = Enemy_Status::Slowfoot;
-					SlowFoot();
-				}
-				else if (type == BULLET_TYPE::SHOOT)
-				{
-					//”RÄ
-					mEnemy_Status = Enemy_Status::combustion;
-					Combustion();
-				}
-			}
-			else if (mEnemy_Status2 == Enemy_Status::generally)
-			{
-				if (type == BULLET_TYPE::SLASHING)
-				{
-					mEnemy_Status2 = Enemy_Status::Slowfoot;
-					SlowFoot();
-				}
-				else if (type == BULLET_TYPE::SHOOT)
-				{
-					//”RÄ
-					mEnemy_Status2 = Enemy_Status::combustion;
-					Combustion();
-				}
-			}
-		}
 
 		//HP‚ª0‚¢‚©‚É‚È‚Á‚½‚çE‚·
 		if (mHP <= 0)
@@ -235,12 +222,68 @@ const bool& Ninja::Damage(const DirectX::SimpleMath::Vector3& pos
 			return false;
 		}
 	}
+	else if (mDisappearTimer > 90)
+	{
+		
+
+		int Damage = damage;
+		//Enemy‚ª–³“G‚Å‚È‚¢‚È‚ç
+		mHP -= Damage;
+		soundmanager.SE_Run(SOUND_SE::SE_DAMAGE, SE_RUN::PLAY);
+
+		//“–‚½‚Á‚½UŒ‚‚ªŒ•‚¾‚Á‚½‚ç
+		if (mEnemy_Status == Enemy_Status::generally)
+		{
+			if (type == BULLET_TYPE::SLASHING)
+			{
+				mEnemy_Status = Enemy_Status::Slowfoot;
+				SlowFoot();
+			}
+			else if (type == BULLET_TYPE::SHOOT)
+			{
+				//”RÄ
+				mEnemy_Status = Enemy_Status::combustion;
+				Combustion();
+			}
+		}
+		else if (mEnemy_Status2 == Enemy_Status::generally)
+		{
+			if (type == BULLET_TYPE::SLASHING)
+			{
+				mEnemy_Status2 = Enemy_Status::Slowfoot;
+				SlowFoot();
+			}
+			else if (type == BULLET_TYPE::SHOOT)
+			{
+				//”RÄ
+				mEnemy_Status2 = Enemy_Status::combustion;
+				Combustion();
+			}
+		}
+
+		//HP‚ª0‚¢‚©‚É‚È‚Á‚½‚çE‚·
+		if (mHP <= 0)
+		{
+			mHP = 0;
+
+			Body_transparency = 1.0f;
+			mDisappearTimer = 99;
+
+			//ƒGƒtƒFƒNƒg‚ÌÀs
+			mpEffectManager->Play(pos, GetEffectColor(), 15, TEXTURE3D::SHADOW);
+
+			//‹à‚ğ‘‚â‚·
+			mpPlayer->SetMoney(GetMoney());
+
+			return false;
+		}
+	}
 
 	return true;
 }
 
 //€‚ñ‚Å‚¢‚é‚©‚Ç‚¤‚©
-const bool& Ninja::Whetherdead()
+const bool Ninja::Whetherdead()
 {
 	//HP‚ª0‚¢‚©‚É‚È‚Á‚½‚çE‚·
 	if (mHP <= 0)
@@ -275,31 +318,35 @@ void Ninja::Combustion()
 }
 
 //HP‚Ìİ’è
-const int& Ninja::SetHP()
+const int Ninja::SetHP()
 {
 	switch (mLevel)
 	{
-		case ENEMY_LEVEL::LEVEL1: {return 10; break; }
-		case ENEMY_LEVEL::LEVEL2: {return 20; break; }
-		case ENEMY_LEVEL::LEVEL3: {return 30; break; }
-		case ENEMY_LEVEL::LEVEL4: {return 40; break; }
-		case ENEMY_LEVEL::LEVEL5: { return 70; break; }
+		case ENEMY_LEVEL::LEVEL1: {return 2; break; }
+		case ENEMY_LEVEL::LEVEL2: {return 5; break; }
+		case ENEMY_LEVEL::LEVEL3: {return 15; break; }
+		case ENEMY_LEVEL::LEVEL4: {return 25; break; }
+		case ENEMY_LEVEL::LEVEL5: { return 40; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //‹à
-const int& Ninja::GetMoney()
+const int Ninja::GetMoney()
 {
 	switch (mLevel)
 	{
-		case ENEMY_LEVEL::LEVEL1: {return 7; break; }
-		case ENEMY_LEVEL::LEVEL2: {return 8; break; }
-		case ENEMY_LEVEL::LEVEL3: {return 9; break; }
-		case ENEMY_LEVEL::LEVEL4: {return 10; break; }
-		case ENEMY_LEVEL::LEVEL5: {return 11; break; }
+		case ENEMY_LEVEL::LEVEL1: {return 8; break; }
+		case ENEMY_LEVEL::LEVEL2: {return 9; break; }
+		case ENEMY_LEVEL::LEVEL3: {return 10; break; }
+		case ENEMY_LEVEL::LEVEL4: {return 11; break; }
+		case ENEMY_LEVEL::LEVEL5: {return 12; break; }
 		default:break;
 	}
+
+	return 0;
 }
 
 //ó‘Ô‚²‚Æ‚Ìˆ—
@@ -313,10 +360,12 @@ void Ninja::Processingofeachstate()
 
 			int time = mCombustionTimer;
 
-			time %= 60;
+			time %= 100;
+
+			//”RÄƒ_ƒ[ƒW‚ğ—^‚¦‚é
 			if (time == 0)
 			{
-				mHP -= 2;
+				mHP -= 1;
 			}
 
 			if (mCombustionTimer >= 300)
@@ -360,7 +409,9 @@ void Ninja::Processingofeachstate2()
 
 			int time = mCombustionTimer;
 
-			time %= 60;
+			time %= 100;
+
+			//”RÄƒ_ƒ[ƒW‚ğ—^‚¦‚é
 			if (time == 0)
 			{
 				mHP -= 1;

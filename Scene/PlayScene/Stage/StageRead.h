@@ -9,6 +9,7 @@ enum class STAGE_NUM :int
 	STAGE_1,
 	STAGE_2,
 	STAGE_3,
+	TUTORIAL,
 
 	NUM,
 };
@@ -34,19 +35,19 @@ public:
 	void SetStageNum(const STAGE_NUM& num);
 
 	//ステージデータの取得
-	const int& GetStageData(const int& x,const int& y)
+	const int GetStageData(const int& x,const int& y)
 	{
 		return mStage[y][x];
 	}
 
 	//ステージの横幅の取得
-	const int& GetHorizontal()
+	const int GetHorizontal()
 	{
 		return mHorizontal;
 	}
 
 	//ステージの立幅の取得
-	const int& GetVertical()
+	const int GetVertical()
 	{
 		return mVertical;
 	}
